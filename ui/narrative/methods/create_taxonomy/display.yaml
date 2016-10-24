@@ -1,0 +1,76 @@
+#
+# define display information
+#
+name: create taxonomy object
+tooltip: |
+    This method create a private taxonomy object
+screenshots: []
+
+icon: icon.png
+
+#
+# define a set of similar methods that might be useful to the user
+#
+suggestions:
+    apps:
+        related:
+            []
+        next:
+            []
+    methods:
+        related:
+            []
+        next:
+            [create_taxon]
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    scientific_name :
+        ui-name : |
+            Scientific Name
+        short-hint : |
+            Scientific Name
+    scientific_lineage :
+        ui-name : |
+            scientific lineage
+        short-hint : |
+            scientific lineage
+    rank :
+        ui-name : |
+            Rank
+        short-hint : |
+            rank
+    kingdom :
+        ui-name : |
+            Kindom
+        short-hint : |
+            Kindom
+    domain :
+        ui-name : |
+            Domain
+        short-hint : |
+            Domain
+    aliases :
+        ui-name : |
+            Aliases
+        short-hint : |
+            Aliases
+    genetic_code :
+        ui-name : |
+            Genetic code
+        short-hint : |
+            Genetic code
+    embl_code :
+        ui-name : |
+            EMBL code
+        short-hint : |
+            EMBL code
+    comments :
+        ui-name : |
+            Comments
+        short-hint : |
+            Comments
+description : |
+    <p>This method create a taxon object in KBase based on the user provided information.</p>

@@ -41,10 +41,13 @@ module taxonomy_service {
         int taxonomic_id;
         string kingdom;
         string domain;
+        string rank;
+        string embl_code;
+        string comments;
         int genetic_code;
         list <string> aliases;
         list <string> scientific_lineage;
-        string workspace_name;
+        string workspace;
     }CreateTaxonomyInputParams;
 
     typedef structure {

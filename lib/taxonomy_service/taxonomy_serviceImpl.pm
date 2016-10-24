@@ -29,152 +29,42 @@ use JSON;
 use LWP::UserAgent;
 use XML::Simple;
 use WebService::Solr;
+use WebService::Solr::Query;
 
 
-sub _ping
+
+sub _parseResponse
 {
-    my ($self, $errors) = @_;
-	print "Pinging server: $self->{_SOLR_PING_URL}\n";
-    my $response = $self->_sendRequest($self->{_SOLR_PING_URL}, 'GET');
-	#print "Ping's response:\n" . Dumper($response) . "\n";
+    my ($self, $response, $responseType) = @_;
 
-    return 1 if ($self->_parseResponse($response));
-    return 0;
-}
+    # Clear the error fields
+    $self->{is_error} = 0;
+    $self->{error} = undef;
 
-sub _sendRequest
-{
-    my ($self, $url, $method, $dataType, $headers, $data) = @_;
+    $responseType = "xml" unless $responseType;
 
-    # Intialize the request params if not specified
-    $dataType = ($dataType) ? $dataType : 'text';
-    $method = ($method) ? $method : 'POST';
-    $url = ($url) ? $url : $self->{_SOLR_URL};
-    $headers = ($headers) ?  $headers : {};
-    $data = ($data) ? $data: '';
-
-    my $out = {};
-
-    # create a HTTP request
-    my $ua = LWP::UserAgent->new;
-    my $request = HTTP::Request->new;
-    $request->method($method);
-    $request->uri($url);
-
-    # set headers
-    foreach my $header (keys %$headers) {
-        $request->header($header =>  $headers->{$header});
-    }
-
-    # set data for posting
-    $request->content($data);
-	#print "The HTTP request: \n" . Dumper($request) . "\n";
-
-    # Send request and receive the response
-    my $response = $ua->request($request);
-    $out->{responsecode} = $response->code();
-    $out->{response} = $response->content;
-    $out->{url} = $url;
-    return $out;
-}
-
-
-sub _listGenomesInSolr {
-	my ($self, $solrCore, $fields, $grp) = @_;
-	my $count = 101;#2,147,483,647 is integer's maximum value
-	my $start = 0;
-	my $rows = "&rows=100";
-  	my $sort = "&sort=genome_id asc";
-
-	my $params = {
-		fl => $fields,
-		wt => "json",
-		rows => $count,
-		sort => "genome_id asc",
-		hl => "false",
-		start => $start
-	};
-	my $query = { q => "*" };
-
-	my $ret = $self->_searchSolr($solrCore, $params, $query, "json", $grp);
-	#print "\nSolr search results: \n" . Dumper($ret->{response}->{response}->{docs}) . "\n\n";
-	return $ret;
-}
-#
-# method name: _searchSolr
-# Internal Method: to execute a search in SOLR according to the passed parameters
-# parameters:
-# $searchParams is a hash, see the example below:
-# $searchParams {
-#   fl => 'object_id,gene_name,genome_source',
-#   wt => 'json',
-#   rows => $count,
-#   sort => 'object_id asc',
-#   hl => 'false',
-#   start => $start,
-#   count => $count
-#}
-#
-sub _searchSolr {
-	my ($self, $searchCore, $searchParams, $searchQuery, $resultFormat, $groupOption, $skipEscape) = @_;
-	$skipEscape = {} unless $skipEscape;
-
-	# If output format is not passed set it to XML
-    $resultFormat = "xml" unless $resultFormat;
-    my $DEFAULT_FIELD_CONNECTOR = "AND";
-
-	# Build the queryFields string with $searchQuery and $searchParams
-	my $queryFields = "";
-    if (! $searchQuery) {
-        $self->{is_error} = 1;
-        $self->{errmsg} = "Query parameters not specified";
-        return undef;
-    }
-	foreach my $key (keys %$searchParams) {
-        $queryFields .= "$key=". URI::Escape::uri_escape($searchParams->{$key}) . "&";
-    }
-
-	# Add solr query to queryString
-    my $qStr = "q=";
-    if (defined $searchQuery->{q}) {
-        $qStr .= URI::Escape::uri_escape($searchQuery->{q});
-    } else {
-    	foreach my $key (keys %$searchQuery) {
-        	if (defined $skipEscape->{$key}) {
-            	$qStr .= "+$key:" . $searchQuery->{$key} ." $DEFAULT_FIELD_CONNECTOR ";
+    # Check for successfull request/response
+    if ($response->{responsecode} eq "200") {
+           if ($responseType eq "json") {
+                my $resRef = JSON::from_json($response);
+                if ($resRef->{responseHeader}->{status} eq 0) {
+                        return 1;
+                }
             } else {
-            	$qStr .= "+$key:" . URI::Escape::uri_escape($searchQuery->{$key}) .
-                        " $DEFAULT_FIELD_CONNECTOR ";
+                my $xs = new XML::Simple();
+                my $xmlRef;
+                eval {
+                        $xmlRef = $xs->XMLin($response);
+                };
+                if ($xmlRef->{lst}->{'int'}->{status}->{content} eq 0){
+                        return 1;
+                }
             }
-        }
-        # Remove last occurance of ' AND '
-        $qStr =~ s/ AND $//g;
     }
-    $queryFields .= "$qStr";
-
-	my $solrCore = "/$searchCore";
-  	my $sort = "&sort=genome_id asc";
-	my $solrGroup = $groupOption ? "&group=true&group.field=$groupOption" : "";
-	my $solrQuery = $self->{_SOLR_URL}.$solrCore."/select?".$queryFields.$solrGroup;
-	print "Query string:\n$solrQuery\n";
-
-	my $solr_response = $self->_sendRequest("$solrQuery", "GET");
-	#print "\nRaw response: \n" . $solr_response->{response} . "\n";
-
-	my $responseCode = $self->_parseResponse($solr_response, $resultFormat);
-    	if ($responseCode) {
-        	if ($resultFormat eq "json") {
-            	my $out = JSON::from_json($solr_response->{response});
-                $solr_response->{response}= $out;
-        	}
-	}
-	if($groupOption){
-		my @solr_genome_records = @{$solr_response->{response}->{grouped}->{genome_id}->{groups}};
-		print "\n\nFound unique genome_id groups of:" . scalar @solr_genome_records . "\n";
-		#print @solr_genome_records[0]->{doclist}->{numFound} ."\n";
-	}
-
-	return $solr_response;
+    $self->{is_error} = 1;
+    $self->{error} = $response;
+    $self->{error}->{errmsg} = $@;
+    return 0;
 }
 
 
@@ -298,31 +188,121 @@ sub search_taxonomy
     my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
     my($output);
     #BEGIN search_taxonomy
-    my $url ="http://kbase.us/internal/ci/dsgfsdfarch";
-    my $solr = WebService::Solr->new(
-    	$self->{_SOLR_PING_URL},
-        { agent => LWP::UserAgent->new( keep_alive => 1 ) }
-    );
+    my $url =$self->{_SOLR_URL}."/QZtest/select?q=*:*";
 
-    print &Dumper ($solr);
+
+	my $query = WebService::Solr::Query->new( { workspace_name => 'KBasePublicRichGenomesV5' } );
+    my %options = (
+        fq => [
+            WebService::Solr::Query->new( { genome_source => 'KBase Central Store' } ),
+            WebService::Solr::Query->new( { taxonomy => 'Bacteria' } ),
+        ],
+    );
+    #print &Dumper ($response);
+
+    open INFILE, "/kb/module/data/orglist.txt" or die "Couldn't open html file $!\n";
+
+    my %sHash;
+    while (defined(my $input = <INFILE>)){
+        chomp $input;
+        #print "*$input*\n";
+        $sHash{$input} = 1;
+    }
+
+    #for (grep /\b\Q$some_word\E\b/, keys %sHash)
+    my @searchHits;
+    my $count =0;
+    for (grep /$params->{search}/, keys %sHash){
+     	my $orgArr = {
+        	label => $_,
+        	id => "somews",
+        	category => "some category"
+       	};
+     	push (@searchHits, $orgArr);
+     	if ($count >= $params->{limit}){
+     		last;
+     	}
+     	$count++;
+	}
+
+	my $arLen = @searchHits;
+    print "$arLen\n";
+
+##############################################Testing code for querying solr############################
+=head
+my $searchCore = "QZtest";
+my $groupOption = "";
+my $searchParams = {
+		fl => "*",
+		wt => "json",
+		rows => 101,
+		sort => "genome_id asc",
+		hl => "false",
+		start => 0
+	};
+	my $searchQuery = { q => "*" };
+
+
+my $skipEscape = {} ;
+
+	# If output format is not passed set it to XML
+    my $resultFormat = "xml";
+    my $DEFAULT_FIELD_CONNECTOR = "AND";
+
+	# Build the queryFields string with $searchQuery and $searchParams
+	my $queryFields = "";
+    if (! $searchQuery) {
+        $self->{is_error} = 1;
+        $self->{errmsg} = "Query parameters not specified";
+        return undef;
+    }
+	foreach my $key (keys %$searchParams) {
+        $queryFields .= "$key=". URI::Escape::uri_escape($searchParams->{$key}) . "&";
+
+        #print &Dumper ($queryFields);
+        #print "\n\n";
+    }
+
+	my $qStr = "q=";
+    if (defined $searchQuery->{q}) {
+        $qStr .= URI::Escape::uri_escape($searchQuery->{q});
+       # print "$qStr\n\n";
+
+    }
+
+    $queryFields .= "$qStr";
+
+	my $solrCore = "/$searchCore";
+  	my $sort = "&sort=genome_id asc";
+	my $solrGroup = $groupOption ? "&group=true&group.field=$groupOption" : "";
+	my $solrQuery = $self->{_SOLR_URL}.$solrCore."/select?".$queryFields.$solrGroup;
+	#print "Query string:\n$solrQuery\n";
+
+##########
+
+#=cut
     my ($url, $method, $dataType, $headers, $data);
   # Intialize the request params if not specified
      $dataType = ($dataType) ? $dataType : 'text';
-     $method = ($method) ? $method : 'POST';
-     $url = $self->{_SOLR_URL};
+     $method = ($method) ? $method : 'GET';
+     #$url = $self->{_SOLR_URL}."/QZtest/select?q=*:*";
+     $url = $self->{_SOLR_URL}."/taxonomy/select?q=*%3A*&start=0&rows=10000&fl=scientific_name&wt=json&indent=true";
      $headers = ($headers) ?  $headers : {};
      $data = ($data) ? $data: '';
 
     my $out = {};
 
+    my $header_field = {
+    	scientific_name => "Wolbachia phage WOcauB1"
+
+    };
     #print &Dumper ($self);
     #die;
     # create a HTTP request
-    my $ua = LWP::UserAgent->new;
-    my $request = HTTP::Request->new;
+    my $ua = LWP::UserAgent->new();
+    my $request = HTTP::Request->new();
     $request->method($method);
     $request->uri($url);
-
 
 
 
@@ -332,37 +312,47 @@ sub search_taxonomy
     }
 
     # set data for posting
-    $request->content($data);
+    #$request->content($data);
 	#print "The HTTP request: \n" . Dumper($request) . "\n";
 
     # Send request and receive the response
     my $response = $ua->request($request);
+    #my $r = solr->generic_solr_request( $url, $query );
+    #my $response = $solr->search($request);
+
+
+    my $sn = $response->content();
+    my $code = $response->code();
+    my $header = $response->header($header_field);
+
+    #print "$sn\n";
+    my $outjson = JSON::from_json($sn);
+    #my $json_text = JSON->new->utf8->decode($sn);
+    #print &Dumper ($outjson);
+    #print &Dumper ($response->{response});
+    #my $outjson = JSON::from_json($response);
+	#my $responseCode = _parseResponse($response, "json");
+
+    	if ($responseCode) {
+        	if ($resultFormat eq "json") {
+            	#my $outjson = JSON::from_json($response);
+
+        	}
+	}
+
+
     $out->{responsecode} = $response->code();
     $out->{response} = $response->content;
     $out->{url} = $url;
-    print &Dumper ($out);
-
-
-
-=head
-    my $solr = WebService::Solr->new;
-    $solr->add( @docs );
-
-    my $response = $solr->search( $query );
-    for my $doc ( $response->docs ) {
-        print $doc->value_for( $id );
-    }
-    my $ping_result = _ping();
-    print "$ping_result\n";
 =cut
-    print "hello\n";
+####################################################Testing code for querying solr###############################
 
-    my $output = {
-    	label => 'Klebsiella',
-    	id => '2098/45/5',
-    	category => 'aerobes'
+    $output = {
+    	num_of_hits => $arLen,
+    	hits =>  \@searchHits
     };
 
+     print &Dumper ($output);
     return $output;
 
     #END search_taxonomy

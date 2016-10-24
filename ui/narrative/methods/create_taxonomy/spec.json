@@ -1,0 +1,186 @@
+{
+    "ver": "0.0.1",
+    "authors": [
+        "janaka"
+    ],
+    "contact": "https://kbase.us/contact-us/",
+    "categories": ["active"],
+    "widgets": {
+        "input": null,
+        "output": null
+    },
+    "parameters": [
+        {
+            "id": "scientific_name",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "text"
+            }
+        },
+        {
+            "id": "scientific_lineage",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "text"
+            }
+        },
+        {
+            "id": "rank",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "text"
+            }
+        },
+        {
+            "id": "kingdom",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "text"
+            }
+        },
+        {
+            "id": "domain",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "text"
+            }
+        },
+        {
+            "id": "aliases",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": true,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "text"
+            }
+        },
+        {
+            "id": "embl_code",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "text"
+            }
+        },
+        {
+            "id": "comments",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "text"
+            }
+        },
+        {
+            "id": "genetic_code",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int",
+                "min_integer" : 0
+            }
+        },
+        {
+            "id": "genetic_code",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int",
+                "min_integer" : 0
+            }
+        }
+    ],
+    "behavior": {
+        "service-mapping": {
+            "url": "",
+            "name": "taxonomy_service",
+            "method": "create_taxonomy",
+            "input_mapping": [
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "workspace"
+                },
+                {
+                    "input_parameter": "scientific_name",
+                    "target_property": "scientific_name"
+                },
+                {
+                    "input_parameter": "scientific_lineage",
+                    "target_property": "scientific_lineage"
+                },
+                {
+                    "input_parameter": "rank",
+                    "target_property": "rank"
+                },
+                {
+                    "input_parameter": "kingdom",
+                    "target_property": "kingdom"
+                },
+                {
+                    "input_parameter": "domain",
+                    "target_property": "domain"
+                },
+                {
+                    "input_parameter": "aliases",
+                    "target_property": "aliases"
+                },
+                {
+                    "input_parameter": "genetic_code",
+                    "target_property": "genetic_code"
+                },
+                {
+                    "input_parameter": "embl_code",
+                    "target_property": "embl_code"
+                },
+                {
+                    "input_parameter": "comments",
+                    "target_property": "comments"
+                }
+            ],
+            "output_mapping": [
+                {
+                  "constant_value": "KBaseGenomeAnnotations.Taxon",
+                  "target_property": "type"
+                },
+                {
+                  "narrative_system_variable": "workspace",
+                  "target_property": "ws"
+                }
+            ]
+        }
+    },
+    "job_id_output_field": "docker"
+}
