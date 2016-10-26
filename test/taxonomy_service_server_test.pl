@@ -31,8 +31,8 @@ sub get_ws_name {
 my $dropdown ={
     private => 0,
     public => 1,
-    search => 'coli',
-    limit => 10,
+    search => 'Esch',
+    limit => 1000,
     start => 0
 
 };
