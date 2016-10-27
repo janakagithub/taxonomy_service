@@ -124,12 +124,11 @@ sub new
 $params is a taxonomy_service.DropDownItemInputParams
 $output is a taxonomy_service.DropDownData
 DropDownItemInputParams is a reference to a hash where the following keys are defined:
-	private has a value which is a taxonomy_service.bool
-	public has a value which is a taxonomy_service.bool
+	private has a value which is an int
+	public has a value which is an int
 	search has a value which is a string
 	limit has a value which is an int
 	start has a value which is an int
-bool is an int
 DropDownData is a reference to a hash where the following keys are defined:
 	num_of_hits has a value which is an int
 	hits has a value which is a reference to a list where each element is a taxonomy_service.DropDownItem
@@ -137,6 +136,8 @@ DropDownItem is a reference to a hash where the following keys are defined:
 	label has a value which is a string
 	id has a value which is a string
 	category has a value which is a string
+	parent has a value which is a string
+	parent_ref has a value which is a string
 
 </pre>
 
@@ -147,12 +148,11 @@ DropDownItem is a reference to a hash where the following keys are defined:
 $params is a taxonomy_service.DropDownItemInputParams
 $output is a taxonomy_service.DropDownData
 DropDownItemInputParams is a reference to a hash where the following keys are defined:
-	private has a value which is a taxonomy_service.bool
-	public has a value which is a taxonomy_service.bool
+	private has a value which is an int
+	public has a value which is an int
 	search has a value which is a string
 	limit has a value which is an int
 	start has a value which is an int
-bool is an int
 DropDownData is a reference to a hash where the following keys are defined:
 	num_of_hits has a value which is an int
 	hits has a value which is a reference to a list where each element is a taxonomy_service.DropDownItem
@@ -160,6 +160,8 @@ DropDownItem is a reference to a hash where the following keys are defined:
 	label has a value which is a string
 	id has a value which is a string
 	category has a value which is a string
+	parent has a value which is a string
+	parent_ref has a value which is a string
 
 
 =end text
@@ -238,10 +240,13 @@ CreateTaxonomyInputParams is a reference to a hash where the following keys are 
 	taxonomic_id has a value which is an int
 	kingdom has a value which is a string
 	domain has a value which is a string
+	rank has a value which is a string
+	embl_code has a value which is a string
+	comments has a value which is a string
 	genetic_code has a value which is an int
 	aliases has a value which is a reference to a list where each element is a string
 	scientific_lineage has a value which is a reference to a list where each element is a string
-	workspace_name has a value which is a string
+	workspace has a value which is a string
 CreateTaxonomyOut is a reference to a hash where the following keys are defined:
 	ref has a value which is a taxonomy_service.ObjectReference
 	scientific_name has a value which is a string
@@ -260,10 +265,13 @@ CreateTaxonomyInputParams is a reference to a hash where the following keys are 
 	taxonomic_id has a value which is an int
 	kingdom has a value which is a string
 	domain has a value which is a string
+	rank has a value which is a string
+	embl_code has a value which is a string
+	comments has a value which is a string
 	genetic_code has a value which is an int
 	aliases has a value which is a reference to a list where each element is a string
 	scientific_lineage has a value which is a reference to a list where each element is a string
-	workspace_name has a value which is a string
+	workspace has a value which is a string
 CreateTaxonomyOut is a reference to a hash where the following keys are defined:
 	ref has a value which is a taxonomy_service.ObjectReference
 	scientific_name has a value which is a string
@@ -857,8 +865,8 @@ a string
 
 <pre>
 a reference to a hash where the following keys are defined:
-private has a value which is a taxonomy_service.bool
-public has a value which is a taxonomy_service.bool
+private has a value which is an int
+public has a value which is an int
 search has a value which is a string
 limit has a value which is an int
 start has a value which is an int
@@ -870,8 +878,8 @@ start has a value which is an int
 =begin text
 
 a reference to a hash where the following keys are defined:
-private has a value which is a taxonomy_service.bool
-public has a value which is a taxonomy_service.bool
+private has a value which is an int
+public has a value which is an int
 search has a value which is a string
 limit has a value which is an int
 start has a value which is an int
@@ -898,6 +906,8 @@ a reference to a hash where the following keys are defined:
 label has a value which is a string
 id has a value which is a string
 category has a value which is a string
+parent has a value which is a string
+parent_ref has a value which is a string
 
 </pre>
 
@@ -909,6 +919,8 @@ a reference to a hash where the following keys are defined:
 label has a value which is a string
 id has a value which is a string
 category has a value which is a string
+parent has a value which is a string
+parent_ref has a value which is a string
 
 
 =end text
@@ -965,10 +977,13 @@ scientific_name has a value which is a string
 taxonomic_id has a value which is an int
 kingdom has a value which is a string
 domain has a value which is a string
+rank has a value which is a string
+embl_code has a value which is a string
+comments has a value which is a string
 genetic_code has a value which is an int
 aliases has a value which is a reference to a list where each element is a string
 scientific_lineage has a value which is a reference to a list where each element is a string
-workspace_name has a value which is a string
+workspace has a value which is a string
 
 </pre>
 
@@ -981,10 +996,13 @@ scientific_name has a value which is a string
 taxonomic_id has a value which is an int
 kingdom has a value which is a string
 domain has a value which is a string
+rank has a value which is a string
+embl_code has a value which is a string
+comments has a value which is a string
 genetic_code has a value which is an int
 aliases has a value which is a reference to a list where each element is a string
 scientific_lineage has a value which is a reference to a list where each element is a string
-workspace_name has a value which is a string
+workspace has a value which is a string
 
 
 =end text

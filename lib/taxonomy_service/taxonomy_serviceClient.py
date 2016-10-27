@@ -36,14 +36,14 @@ class taxonomy_service(object):
     def search_taxonomy(self, params, context=None):
         """
         :param params: instance of type "DropDownItemInputParams" ->
-           structure: parameter "private" of type "bool" (A binary boolean),
-           parameter "public" of type "bool" (A binary boolean), parameter
-           "search" of String, parameter "limit" of Long, parameter "start"
-           of Long
+           structure: parameter "private" of Long, parameter "public" of
+           Long, parameter "search" of String, parameter "limit" of Long,
+           parameter "start" of Long
         :returns: instance of type "DropDownData" -> structure: parameter
            "num_of_hits" of Long, parameter "hits" of list of type
            "DropDownItem" -> structure: parameter "label" of String,
-           parameter "id" of String, parameter "category" of String
+           parameter "id" of String, parameter "category" of String,
+           parameter "parent" of String, parameter "parent_ref" of String
         """
         return self._client.call_method(
             'taxonomy_service.search_taxonomy',
@@ -54,9 +54,11 @@ class taxonomy_service(object):
         :param params: instance of type "CreateTaxonomyInputParams" ->
            structure: parameter "scientific_name" of String, parameter
            "taxonomic_id" of Long, parameter "kingdom" of String, parameter
-           "domain" of String, parameter "genetic_code" of Long, parameter
-           "aliases" of list of String, parameter "scientific_lineage" of
-           list of String, parameter "workspace_name" of String
+           "domain" of String, parameter "rank" of String, parameter
+           "embl_code" of String, parameter "comments" of String, parameter
+           "genetic_code" of Long, parameter "aliases" of list of String,
+           parameter "scientific_lineage" of list of String, parameter
+           "workspace" of String
         :returns: instance of type "CreateTaxonomyOut" -> structure:
            parameter "ref" of type "ObjectReference" (workspace ref to an
            object), parameter "scientific_name" of String

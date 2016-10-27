@@ -15,8 +15,8 @@ module taxonomy_service {
     typedef string ObjectReference;
 
     typedef structure {
-        bool private;
-        bool public;
+        int private;
+        int public;
         string search;
         int limit;
         int start;
@@ -26,6 +26,8 @@ module taxonomy_service {
         string label;
         string id;
         string category;
+        string parent;
+        string parent_ref;
     } DropDownItem;
 
     typedef structure{

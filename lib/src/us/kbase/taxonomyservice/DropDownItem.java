@@ -21,7 +21,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "label",
     "id",
-    "category"
+    "category",
+    "parent",
+    "parent_ref"
 })
 public class DropDownItem {
 
@@ -31,6 +33,10 @@ public class DropDownItem {
     private String id;
     @JsonProperty("category")
     private String category;
+    @JsonProperty("parent")
+    private String parent;
+    @JsonProperty("parent_ref")
+    private String parentRef;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("label")
@@ -78,6 +84,36 @@ public class DropDownItem {
         return this;
     }
 
+    @JsonProperty("parent")
+    public String getParent() {
+        return parent;
+    }
+
+    @JsonProperty("parent")
+    public void setParent(String parent) {
+        this.parent = parent;
+    }
+
+    public DropDownItem withParent(String parent) {
+        this.parent = parent;
+        return this;
+    }
+
+    @JsonProperty("parent_ref")
+    public String getParentRef() {
+        return parentRef;
+    }
+
+    @JsonProperty("parent_ref")
+    public void setParentRef(String parentRef) {
+        this.parentRef = parentRef;
+    }
+
+    public DropDownItem withParentRef(String parentRef) {
+        this.parentRef = parentRef;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -90,7 +126,7 @@ public class DropDownItem {
 
     @Override
     public String toString() {
-        return ((((((((("DropDownItem"+" [label=")+ label)+", id=")+ id)+", category=")+ category)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((("DropDownItem"+" [label=")+ label)+", id=")+ id)+", category=")+ category)+", parent=")+ parent)+", parentRef=")+ parentRef)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

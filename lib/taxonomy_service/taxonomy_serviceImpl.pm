@@ -4,8 +4,8 @@ use Bio::KBase::Exceptions;
 # Use Semantic Versioning (2.0.0-rc.1)
 # http://semver.org
 our $VERSION = '0.0.1';
-our $GIT_URL = '';
-our $GIT_COMMIT_HASH = '';
+our $GIT_URL = 'https://github.com/janakagithub/taxonomy_service.git';
+our $GIT_COMMIT_HASH = 'c774e09f2e244cd29a57c6d9dbe4595676650fd6';
 
 =head1 NAME
 
@@ -37,23 +37,102 @@ sub search_solr
 {
     my ($taxonomy_core, $solrurl, $search, $start, $limit, $method) = @_;
 
-	my $url = $solrurl."/$taxonomy_core/select?q=*%3A*&fq=$search*&start=$start&rows=$limit&fl=scientific_name%2Cparent_taxon_ref&wt=json&indent=true";
+	my $url = $solrurl."/$taxonomy_core/select?q=*%3A*&fq=$search*&start=$start&rows=$limit&fl=scientific_name%2Cparent_taxon_ref%2Cws_ref&df=scientific_name&wt=json&indent=true";
 	my $method = 'GET';
-
-	# create a HTTP request
-    my $ua = LWP::UserAgent->new();
-    my $request = HTTP::Request->new();
-    $request->method($method);
-    $request->uri($url);
-
-    my $response = $ua->request($request);
-    my $sn = $response->content();
-    my $code = $response->code();
-    my $jsonf = JSON::from_json($sn);
+	my $jsonf = solr_request ($method, $url);
 
 	return $jsonf;
 }
 
+sub solr_request
+{
+
+	my ($method, $url) = @_;
+	# create a HTTP request
+	my $ua = LWP::UserAgent->new();
+	my $request = HTTP::Request->new();
+	$request->method($method);
+	$request->uri($url);
+
+	my $response = $ua->request($request);
+	my $sn = $response->content();
+	my $code = $response->code();
+	my $jsonf = JSON::from_json($sn);
+
+	return $jsonf;
+}
+
+sub search_parents
+{
+	my ($public_search, $taxonomy_core, $solrurl) = @_;
+	my $hits_list = [];
+	for (my $i=0; $i< @{$public_search}; $i++){
+		my $sci_name = $public_search->[$i]->{scientific_name};
+		my $parent_ref = $public_search->[$i]->{parent_taxon_ref};
+
+		if (defined $public_search->[$i]->{parent_taxon_ref}){
+			my $url = $solrurl."/$taxonomy_core/select?q=*%3A*&fq=$public_search->[$i]->{parent_taxon_ref}&fl=scientific_name&df=ws_ref&wt=json&indent=true";
+			my $method = 'GET';
+			my $jsonf = solr_request ($method, $url);
+		    if ($jsonf->{responseHeader}->{params}->{fq} eq $public_search->[$i]->{parent_taxon_ref}){
+		    	my $each_taxon = {
+	        	label => $public_search->[$i]->{scientific_name},
+	        	id => $public_search->[$i]->{ws_ref},
+	        	parent => $jsonf->{response}->{docs}->[0]->{scientific_name},
+	        	parent_ref => $public_search->[$i]->{parent_taxon_ref},
+	        	category => ''
+	    		};
+	    		push ($hits_list, $each_taxon);
+
+		    }
+			else{
+				next;
+			}
+		}
+		else{
+			my $each_taxon = {
+	        	label => $public_search->[$i]->{scientific_name},
+	        	id => $public_search->[$i]->{ws_ref},
+	        	parent => "Root taxon or unknown parent",
+	        	parent_ref => undef,
+	        	category => ''
+	    	};
+	    	push ($hits_list, $each_taxon);
+		}
+	}
+
+	return $hits_list;
+}
+
+sub search_private
+{
+    my ($public_search, $wsClient) = @_;
+    my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
+	my $token=$ctx->token;
+	my $provenance=$ctx->provenance;
+	my $hits_list = [];
+	for (my $i=0; $i< @{$public_search}; $i++){
+		my $sci_name = $public_search->[$i]->{scientific_name};
+		my $parent_ref = $public_search->[$i]->{parent_taxon_ref};
+		print "$sci_name\t$parent_ref\n";
+		my $parent_taxon;
+		eval {
+	        $parent_taxon=$wsClient->get_objects([{ref=>$parent_ref}])->[0]{data};
+	        my $each_taxon = {
+		        	label => $public_search->[$i]->{scientific_name},
+		        	id => $public_search->[$i]->{parent_taxon_ref},
+		        	parent => $parent_taxon->{scientific_name},
+		        	category => ''
+		    	};
+		    	push ($hits_list, $each_taxon);
+    	};
+    	if ($@) {
+        die "Error loading taxons from workspace:\n".$@;
+    	}
+
+	}
+	return $hits_list;
+}
 
 #END_HEADER
 
@@ -109,12 +188,11 @@ sub new
 $params is a taxonomy_service.DropDownItemInputParams
 $output is a taxonomy_service.DropDownData
 DropDownItemInputParams is a reference to a hash where the following keys are defined:
-	private has a value which is a taxonomy_service.bool
-	public has a value which is a taxonomy_service.bool
+	private has a value which is an int
+	public has a value which is an int
 	search has a value which is a string
 	limit has a value which is an int
 	start has a value which is an int
-bool is an int
 DropDownData is a reference to a hash where the following keys are defined:
 	num_of_hits has a value which is an int
 	hits has a value which is a reference to a list where each element is a taxonomy_service.DropDownItem
@@ -122,6 +200,8 @@ DropDownItem is a reference to a hash where the following keys are defined:
 	label has a value which is a string
 	id has a value which is a string
 	category has a value which is a string
+	parent has a value which is a string
+	parent_ref has a value which is a string
 
 </pre>
 
@@ -132,12 +212,11 @@ DropDownItem is a reference to a hash where the following keys are defined:
 $params is a taxonomy_service.DropDownItemInputParams
 $output is a taxonomy_service.DropDownData
 DropDownItemInputParams is a reference to a hash where the following keys are defined:
-	private has a value which is a taxonomy_service.bool
-	public has a value which is a taxonomy_service.bool
+	private has a value which is an int
+	public has a value which is an int
 	search has a value which is a string
 	limit has a value which is an int
 	start has a value which is an int
-bool is an int
 DropDownData is a reference to a hash where the following keys are defined:
 	num_of_hits has a value which is an int
 	hits has a value which is a reference to a list where each element is a taxonomy_service.DropDownItem
@@ -145,6 +224,8 @@ DropDownItem is a reference to a hash where the following keys are defined:
 	label has a value which is a string
 	id has a value which is a string
 	category has a value which is a string
+	parent has a value which is a string
+	parent_ref has a value which is a string
 
 
 =end text
@@ -178,6 +259,9 @@ sub search_taxonomy
 
 
     #########################Begin of temp code based on list of taxons###########################
+    my $token=$ctx->token;
+    my $provenance=$ctx->provenance;
+    my $wsClient=Bio::KBase::workspace::Client->new($self->{'workspace-url'},token=>$token);
     open INFILE, "/kb/module/data/orglist.txt" or die "Couldn't open html file $!\n";
 
     my %sHash;
@@ -214,23 +298,15 @@ sub search_taxonomy
 	my $method = 'GET';
 
 	my $search_response = search_solr($taxonomy_core, $self->{_SOLR_URL}, $params->{search}, $params->{start}, $params->{limit}, $method);
-
-	my @hits_list;
-	for (my $i=0; $i< @{$search_response->{response}->{docs}}; $i++){
-		my $each_taxon = {
-        	label => $search_response->{response}->{docs}->[$i]->{scientific_name},
-        	id => $search_response->{response}->{docs}->[$i]->{parent_taxon_ref},
-        	category => ''
-    	};
-    	push (@hits_list, $each_taxon);
-	}
+	my $hits_list = search_parents ($search_response->{response}->{docs},$taxonomy_core, $self->{_SOLR_URL});
+	#my $list_with_parents = search_private ($search_response->{response}->{docs}, $wsClient);
 
 	$output = {
-	    	hits => \@hits_list,
+	    	hits => $hits_list,
 	    	num_of_hits =>  $search_response->{response}->{numFound}
 	};
 
-    #print &Dumper ($output);
+    print &Dumper ($output);
     return $output;
 
     #END search_taxonomy
@@ -265,10 +341,13 @@ CreateTaxonomyInputParams is a reference to a hash where the following keys are 
 	taxonomic_id has a value which is an int
 	kingdom has a value which is a string
 	domain has a value which is a string
+	rank has a value which is a string
+	embl_code has a value which is a string
+	comments has a value which is a string
 	genetic_code has a value which is an int
 	aliases has a value which is a reference to a list where each element is a string
 	scientific_lineage has a value which is a reference to a list where each element is a string
-	workspace_name has a value which is a string
+	workspace has a value which is a string
 CreateTaxonomyOut is a reference to a hash where the following keys are defined:
 	ref has a value which is a taxonomy_service.ObjectReference
 	scientific_name has a value which is a string
@@ -287,10 +366,13 @@ CreateTaxonomyInputParams is a reference to a hash where the following keys are 
 	taxonomic_id has a value which is an int
 	kingdom has a value which is a string
 	domain has a value which is a string
+	rank has a value which is a string
+	embl_code has a value which is a string
+	comments has a value which is a string
 	genetic_code has a value which is an int
 	aliases has a value which is a reference to a list where each element is a string
 	scientific_lineage has a value which is a reference to a list where each element is a string
-	workspace_name has a value which is a string
+	workspace has a value which is a string
 CreateTaxonomyOut is a reference to a hash where the following keys are defined:
 	ref has a value which is a taxonomy_service.ObjectReference
 	scientific_name has a value which is a string
@@ -325,6 +407,8 @@ sub create_taxonomy
     my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
     my($output);
     #BEGIN create_taxonomy
+
+
     #END create_taxonomy
     my @_bad_returns;
     (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
@@ -781,8 +865,8 @@ a string
 
 <pre>
 a reference to a hash where the following keys are defined:
-private has a value which is a taxonomy_service.bool
-public has a value which is a taxonomy_service.bool
+private has a value which is an int
+public has a value which is an int
 search has a value which is a string
 limit has a value which is an int
 start has a value which is an int
@@ -794,8 +878,8 @@ start has a value which is an int
 =begin text
 
 a reference to a hash where the following keys are defined:
-private has a value which is a taxonomy_service.bool
-public has a value which is a taxonomy_service.bool
+private has a value which is an int
+public has a value which is an int
 search has a value which is a string
 limit has a value which is an int
 start has a value which is an int
@@ -822,6 +906,8 @@ a reference to a hash where the following keys are defined:
 label has a value which is a string
 id has a value which is a string
 category has a value which is a string
+parent has a value which is a string
+parent_ref has a value which is a string
 
 </pre>
 
@@ -833,6 +919,8 @@ a reference to a hash where the following keys are defined:
 label has a value which is a string
 id has a value which is a string
 category has a value which is a string
+parent has a value which is a string
+parent_ref has a value which is a string
 
 
 =end text
@@ -889,10 +977,13 @@ scientific_name has a value which is a string
 taxonomic_id has a value which is an int
 kingdom has a value which is a string
 domain has a value which is a string
+rank has a value which is a string
+embl_code has a value which is a string
+comments has a value which is a string
 genetic_code has a value which is an int
 aliases has a value which is a reference to a list where each element is a string
 scientific_lineage has a value which is a reference to a list where each element is a string
-workspace_name has a value which is a string
+workspace has a value which is a string
 
 </pre>
 
@@ -905,10 +996,13 @@ scientific_name has a value which is a string
 taxonomic_id has a value which is an int
 kingdom has a value which is a string
 domain has a value which is a string
+rank has a value which is a string
+embl_code has a value which is a string
+comments has a value which is a string
 genetic_code has a value which is an int
 aliases has a value which is a reference to a list where each element is a string
 scientific_lineage has a value which is a reference to a list where each element is a string
-workspace_name has a value which is a string
+workspace has a value which is a string
 
 
 =end text

@@ -24,10 +24,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "taxonomic_id",
     "kingdom",
     "domain",
+    "rank",
+    "embl_code",
+    "comments",
     "genetic_code",
     "aliases",
     "scientific_lineage",
-    "workspace_name"
+    "workspace"
 })
 public class CreateTaxonomyInputParams {
 
@@ -39,14 +42,20 @@ public class CreateTaxonomyInputParams {
     private java.lang.String kingdom;
     @JsonProperty("domain")
     private java.lang.String domain;
+    @JsonProperty("rank")
+    private java.lang.String rank;
+    @JsonProperty("embl_code")
+    private java.lang.String emblCode;
+    @JsonProperty("comments")
+    private java.lang.String comments;
     @JsonProperty("genetic_code")
     private Long geneticCode;
     @JsonProperty("aliases")
     private List<String> aliases;
     @JsonProperty("scientific_lineage")
     private List<String> scientificLineage;
-    @JsonProperty("workspace_name")
-    private java.lang.String workspaceName;
+    @JsonProperty("workspace")
+    private java.lang.String workspace;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
     @JsonProperty("scientific_name")
@@ -109,6 +118,51 @@ public class CreateTaxonomyInputParams {
         return this;
     }
 
+    @JsonProperty("rank")
+    public java.lang.String getRank() {
+        return rank;
+    }
+
+    @JsonProperty("rank")
+    public void setRank(java.lang.String rank) {
+        this.rank = rank;
+    }
+
+    public CreateTaxonomyInputParams withRank(java.lang.String rank) {
+        this.rank = rank;
+        return this;
+    }
+
+    @JsonProperty("embl_code")
+    public java.lang.String getEmblCode() {
+        return emblCode;
+    }
+
+    @JsonProperty("embl_code")
+    public void setEmblCode(java.lang.String emblCode) {
+        this.emblCode = emblCode;
+    }
+
+    public CreateTaxonomyInputParams withEmblCode(java.lang.String emblCode) {
+        this.emblCode = emblCode;
+        return this;
+    }
+
+    @JsonProperty("comments")
+    public java.lang.String getComments() {
+        return comments;
+    }
+
+    @JsonProperty("comments")
+    public void setComments(java.lang.String comments) {
+        this.comments = comments;
+    }
+
+    public CreateTaxonomyInputParams withComments(java.lang.String comments) {
+        this.comments = comments;
+        return this;
+    }
+
     @JsonProperty("genetic_code")
     public Long getGeneticCode() {
         return geneticCode;
@@ -154,18 +208,18 @@ public class CreateTaxonomyInputParams {
         return this;
     }
 
-    @JsonProperty("workspace_name")
-    public java.lang.String getWorkspaceName() {
-        return workspaceName;
+    @JsonProperty("workspace")
+    public java.lang.String getWorkspace() {
+        return workspace;
     }
 
-    @JsonProperty("workspace_name")
-    public void setWorkspaceName(java.lang.String workspaceName) {
-        this.workspaceName = workspaceName;
+    @JsonProperty("workspace")
+    public void setWorkspace(java.lang.String workspace) {
+        this.workspace = workspace;
     }
 
-    public CreateTaxonomyInputParams withWorkspaceName(java.lang.String workspaceName) {
-        this.workspaceName = workspaceName;
+    public CreateTaxonomyInputParams withWorkspace(java.lang.String workspace) {
+        this.workspace = workspace;
         return this;
     }
 
@@ -181,7 +235,7 @@ public class CreateTaxonomyInputParams {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((((((("CreateTaxonomyInputParams"+" [scientificName=")+ scientificName)+", taxonomicId=")+ taxonomicId)+", kingdom=")+ kingdom)+", domain=")+ domain)+", geneticCode=")+ geneticCode)+", aliases=")+ aliases)+", scientificLineage=")+ scientificLineage)+", workspaceName=")+ workspaceName)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((((((((("CreateTaxonomyInputParams"+" [scientificName=")+ scientificName)+", taxonomicId=")+ taxonomicId)+", kingdom=")+ kingdom)+", domain=")+ domain)+", rank=")+ rank)+", emblCode=")+ emblCode)+", comments=")+ comments)+", geneticCode=")+ geneticCode)+", aliases=")+ aliases)+", scientificLineage=")+ scientificLineage)+", workspace=")+ workspace)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
