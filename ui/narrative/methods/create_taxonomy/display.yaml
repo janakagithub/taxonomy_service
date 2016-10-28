@@ -1,7 +1,7 @@
 #
 # define display information
 #
-name: create taxonomy object
+name: create private taxon
 tooltip: |
     This method create a private taxonomy object
 screenshots: []
