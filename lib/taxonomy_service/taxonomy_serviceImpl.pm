@@ -37,7 +37,7 @@ sub search_solr
 {
     my ($taxonomy_core, $solrurl, $search, $start, $limit, $method) = @_;
 
-	my $url = $solrurl."/$taxonomy_core/select?q=*%3A*&fq=$search*&start=$start&rows=$limit&fl=scientific_name%2Cparent_taxon_ref%2Cws_ref&df=scientific_name&wt=json&indent=true";
+	my $url = $solrurl."/$taxonomy_core/select?q=*%3A*&fq=$search*&start=$start&rows=$limit&fl=scientific_name%2Cparent_taxon_ref%2Cws_ref&wt=json&indent=true";
 	my $method = 'GET';
 	my $jsonf = solr_request ($method, $url);
 
@@ -428,7 +428,7 @@ sub create_taxonomy
 	#print &Dumper ($ws_hash);
     if (exists $ws_hash->{"private_taxonomy"}){
 
-    	print "found existing taxonomy workspace $ws_hash->{'private_taxonomy'}->[0]\n";
+    	print "found the existing private taxonomy workspace named $ws_hash->{'private_taxonomy'}->[0]\n";
     	$private_tax_ws_ref = $ws_hash->{"private_taxonomy"}->[6];
 
     }
@@ -494,7 +494,7 @@ sub create_taxonomy
 
      };
 
-    print "Sucessfully created new taxon for $params->{scientific_name}";
+    print "\n\nSucessfully created new taxon for $params->{scientific_name}\n\n";
     print &Dumper ($output);
 
     return $output;
