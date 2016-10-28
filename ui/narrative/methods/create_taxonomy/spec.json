@@ -95,9 +95,9 @@
         {
             "id": "aliases",
             "optional": true,
-            "advanced": false,
+            "advanced": true,
             "allow_multiple": true,
-            "default_values": [ "Klebsiella oxytoca str. janaka"],
+            "default_values": [ ""],
             "field_type": "text",
             "text_options": {
                 "validate_as": "text"
