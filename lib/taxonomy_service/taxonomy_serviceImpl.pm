@@ -412,7 +412,9 @@ sub create_taxonomy
     my $provenance=$ctx->provenance;
     my $wsClient=Bio::KBase::workspace::Client->new($self->{'workspace-url'},token=>$token);
     $params->{genetic_code} = 11;
-    print &Dumper ($params);
+    $params->{parent} = "1779/87821/1";
+
+    #print &Dumper ($params);
 
     #checking for private taxonomy ws
     my $private_tax_ws_ref;
@@ -441,7 +443,7 @@ sub create_taxonomy
 
     	 my $info = $wsClient->create_workspace($create_ws_params);
     	 $private_tax_ws_ref = $info->[0];
-    	 print &Dumper ($info);
+    	 #print &Dumper ($info);
     }
 
 
