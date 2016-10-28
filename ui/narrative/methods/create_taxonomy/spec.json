@@ -15,32 +15,59 @@
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": [ "" ],
+            "default_values": [ "Klebsiella sp. janaka" ],
             "field_type": "text",
             "text_options": {
                 "validate_as": "text"
             }
         },
         {
-            "id": "scientific_lineage",
-            "optional": true,
-            "advanced": true,
+            "id": "parent",
+            "optional": false,
+            "advanced": false,
             "allow_multiple": false,
-            "default_values": [ "" ],
+            "default_values": [ "Klebsiella" ],
             "field_type": "text",
             "text_options": {
                 "validate_as": "text"
             }
         },
         {
-            "id": "rank",
-            "optional": true,
-            "advanced": true,
+            "id": "genetic_code",
+            "optional": false,
+            "advanced": false,
             "allow_multiple": false,
-            "default_values": [ "" ],
-            "field_type": "text",
-            "text_options": {
-                "validate_as": "text"
+            "default_values": [ "std_code" ],
+            "field_type": "dropdown",
+            "dropdown_options": {
+                "options": [
+                    {
+                      "value": "std_code",
+                      "display": "1. Standard Code",
+                      "id": "std_code",
+                      "ui_name": "1. Standard Code"
+                    },
+                    {
+                      "value": "vertMit_code",
+                      "display": "2. Vertebrate Mitochondrial Code",
+                      "id": "vertMit_code",
+                      "ui_name": "2. Vertebrate Mitochondrial Code"
+                    },
+                    {
+                      "value": "yeast_code",
+                      "display": "3. Yeast Mitochondrial Code",
+                      "id": "yeast_code",
+                      "ui_name": "3. Yeast Mitochondrial Code"
+                    },
+                    {
+                      "value": "mold",
+                      "display": "4. Mold, Protozoan Coelenterate",
+                      "id": "mold",
+                      "ui_name": "4. Mold, Protozoan Coelenterate"
+                    }
+
+                ]
+
             }
         },
         {
@@ -77,7 +104,7 @@
             }
         },
         {
-            "id": "embl_code",
+            "id": "rank",
             "optional": true,
             "advanced": false,
             "allow_multiple": false,
@@ -97,30 +124,6 @@
             "text_options": {
                 "validate_as": "text"
             }
-        },
-        {
-            "id": "genetic_code",
-            "optional": true,
-            "advanced": false,
-            "allow_multiple": false,
-            "default_values": [ "" ],
-            "field_type": "text",
-            "text_options": {
-                "validate_as": "int",
-                "min_integer" : 0
-            }
-        },
-        {
-            "id": "genetic_code",
-            "optional": true,
-            "advanced": false,
-            "allow_multiple": false,
-            "default_values": [ "" ],
-            "field_type": "text",
-            "text_options": {
-                "validate_as": "int",
-                "min_integer" : 0
-            }
         }
     ],
     "behavior": {
@@ -138,8 +141,12 @@
                     "target_property": "scientific_name"
                 },
                 {
-                    "input_parameter": "scientific_lineage",
-                    "target_property": "scientific_lineage"
+                    "input_parameter": "parent",
+                    "target_property": "parent"
+                },
+                {
+                    "input_parameter": "genetic_code",
+                    "target_property": "genetic_code"
                 },
                 {
                     "input_parameter": "rank",
@@ -156,14 +163,6 @@
                 {
                     "input_parameter": "aliases",
                     "target_property": "aliases"
-                },
-                {
-                    "input_parameter": "genetic_code",
-                    "target_property": "genetic_code"
-                },
-                {
-                    "input_parameter": "embl_code",
-                    "target_property": "embl_code"
                 },
                 {
                     "input_parameter": "comments",

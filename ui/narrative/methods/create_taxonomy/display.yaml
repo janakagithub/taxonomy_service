@@ -32,16 +32,16 @@ parameters :
             Scientific Name
         short-hint : |
             Scientific Name
-    scientific_lineage :
+    parent :
         ui-name : |
-            scientific lineage
+            Parent
         short-hint : |
-            scientific lineage
-    rank :
+            Parent
+    genetic_code :
         ui-name : |
-            Rank
+            Genetic Code
         short-hint : |
-            rank
+            Genetic Code
     kingdom :
         ui-name : |
             Kindom
@@ -57,16 +57,11 @@ parameters :
             Aliases
         short-hint : |
             Aliases
-    genetic_code :
+    rank :
         ui-name : |
-            Genetic code
+            Rank
         short-hint : |
-            Genetic code
-    embl_code :
-        ui-name : |
-            EMBL code
-        short-hint : |
-            EMBL code
+            Rank
     comments :
         ui-name : |
             Comments

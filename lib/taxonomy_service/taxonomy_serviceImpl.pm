@@ -297,6 +297,7 @@ sub search_taxonomy
 	my $solrurl = $self->{_SOLR_URL};
 	my $method = 'GET';
 
+	# this needs to be changed as two functions in spec a.) search b.) search parents
 	my $search_response = search_solr($taxonomy_core, $self->{_SOLR_URL}, $params->{search}, $params->{start}, $params->{limit}, $method);
 	my $hits_list = search_parents ($search_response->{response}->{docs},$taxonomy_core, $self->{_SOLR_URL});
 	#my $list_with_parents = search_private ($search_response->{response}->{docs}, $wsClient);
@@ -407,8 +408,94 @@ sub create_taxonomy
     my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
     my($output);
     #BEGIN create_taxonomy
+    my $token=$ctx->token;
+    my $provenance=$ctx->provenance;
+    my $wsClient=Bio::KBase::workspace::Client->new($self->{'workspace-url'},token=>$token);
+    $params->{genetic_code} = 11;
+    print &Dumper ($params);
+
+    #checking for private taxonomy ws
+    my $private_tax_ws_ref;
+    my $ws_list = $wsClient->list_workspaces ({excludeGlobal=> 1});
+    my $ws_hash;
+    for (my $i=0; $i< @{$ws_list}; $i++){
+    	my @tempName = split /:/, $ws_list->[$i]->[0];
+    	$ws_hash->{$tempName[-1]} = $ws_list->[$i];
+    }
+
+	#print &Dumper ($ws_hash);
+    if (exists $ws_hash->{"private_taxonomy"}){
+
+    	print "found existing taxonomy workspace $ws_hash->{'private_taxonomy'}->[0]\n";
+    	$private_tax_ws_ref = $ws_hash->{"private_taxonomy"}->[6];
+
+    }
+    else{
+
+    	print "creating a new workspace for storing private taxnomies\n";
+    	my $create_ws_params = {
+    		workspace => "private_taxonomy",
+    		globalread => "n",
+    		description => "store private taxonomy objects"
+    	};
+
+    	 my $info = $wsClient->create_workspace($create_ws_params);
+    	 $private_tax_ws_ref = $info->[0];
+    	 print &Dumper ($info);
+    }
 
 
+    #Fetching parent taxonomy
+    my $parent_taxon=$wsClient->get_objects([{ref=>$params->{parent}}])->[0]{data};
+    my $tempL =~ s/\"//, $parent_taxon->{scientific_lineage};
+
+    my $tax_data = {
+
+    	scientific_name => $params->{scientific_name},
+    	domain => $params->{domain},
+    	taxonomy_id => 100,
+    	GenBank_hidden_flag => 0,
+    	inherited_GC_flag => 0,
+    	aliases => $params->{aliases},
+    	parent_taxon_ref => $params->{parent},
+    	genetic_code => $params->{genetic_code},
+    	rank => "no rank",
+    	scientific_lineage => $parent_taxon->{scientific_lineage}.";".$parent_taxon->{scientific_name}
+
+
+    };
+
+    my $obj_info_list = undef;
+    eval {
+        $obj_info_list = $wsClient->save_objects({
+            'id'=>$private_tax_ws_ref,
+            'objects'=>[{
+                'type'=>'KBaseGenomeAnnotations.Taxon',
+                'data'=>$tax_data,
+                'name'=>$tax_data->{taxonomic_id}."_taxon",
+                'hidden' => 0,
+                'provenance'=>$provenance
+            }]
+        });
+    };
+    if ($@) {
+        die "Error saving modified genome object to workspace:\n".$@;
+    }
+    my $info_ref = $obj_info_list->[0];
+    my $ob_ref =  $info_ref->[6]."/".$info_ref->[0]."/".$info_ref->[4];
+    #print &Dumper ($info_ref);
+
+
+     $output = {
+     	scientific_name => $params->{scientific_name},
+     	ref => $ob_ref
+
+     };
+
+    print "Sucessfully created new taxon for $params->{scientific_name}";
+    print &Dumper ($output);
+
+    return $output;
     #END create_taxonomy
     my @_bad_returns;
     (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");

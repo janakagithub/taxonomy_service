@@ -31,16 +31,28 @@ sub get_ws_name {
 my $dropdown ={
     private => 0,
     public => 1,
-    search => 'Esch',
-    limit => 1000,
+    search => 'Klebsiella ',
+    limit => 10,
     start => 0
 
 };
+=head
+ws_ref": "1292/406191/1",
+        "parent_taxon_ref": "1292/146154/1"
+        typical k.oxy substr M5a1 1292/505635/1
+=cut
 
+my $create_taxon_input = {
+    scientific_name => "Klebsiella sp. janaka",
+    parent => "1779/87821/1",
+    genetic_code => "std_code",
+    domain => "Bacteria",
+    aliases => ["Klebsiella oxytoca str. janaka", "Klebsiella oxytoca strain janaka"]
+};
 
 eval {
-   my $ret =$impl->search_taxonomy($dropdown);
-   #my $ret =$impl->create($mikes_report_param);
+   #my $ret =$impl->search_taxonomy($dropdown);
+   my $ret =$impl->create_taxonomy($create_taxon_input);
 };
 
 my $err = undef;
