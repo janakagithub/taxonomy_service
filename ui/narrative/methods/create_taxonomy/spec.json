@@ -73,7 +73,7 @@
         {
             "id": "kingdom",
             "optional": true,
-            "advanced": false,
+            "advanced": true,
             "allow_multiple": false,
             "default_values": [ "Bacteria" ],
             "field_type": "text",
@@ -97,7 +97,7 @@
             "optional": true,
             "advanced": false,
             "allow_multiple": true,
-            "default_values": [ "Klebsiella oxytoca str. janaka", "Klebsiella oxytoca strain janaka" ],
+            "default_values": [ "Klebsiella oxytoca str. janaka"],
             "field_type": "text",
             "text_options": {
                 "validate_as": "text"
@@ -106,7 +106,7 @@
         {
             "id": "rank",
             "optional": true,
-            "advanced": false,
+            "advanced": true,
             "allow_multiple": false,
             "default_values": [ "" ],
             "field_type": "text",
@@ -117,7 +117,7 @@
         {
             "id": "comments",
             "optional": true,
-            "advanced": false,
+            "advanced": true,
             "allow_multiple": false,
             "default_values": [ "" ],
             "field_type": "text",
