@@ -414,29 +414,28 @@ sub create_taxonomy
     $params->{genetic_code} = 11;
     $params->{parent} = "1779/87821/1";
 
-    #print &Dumper ($params);
-
     #checking for private taxonomy ws
     my $private_tax_ws_ref;
     my $ws_list = $wsClient->list_workspaces ({excludeGlobal=> 1});
     my $ws_hash;
     for (my $i=0; $i< @{$ws_list}; $i++){
     	my @tempName = split /:/, $ws_list->[$i]->[0];
-    	$ws_hash->{$tempName[-1]} = $ws_list->[$i];
+    	$ws_hash->{$ws_list->[$i]->[0]} = $ws_list->[$i];
     }
 
 	#print &Dumper ($ws_hash);
-    if (exists $ws_hash->{"private_taxonomy"}){
+	my $new_ws = $ctx->{user_id}.":private_taxonomy";
+    if (exists $ws_hash->{$new_ws}){
 
-    	print "found the existing private taxonomy workspace named $ws_hash->{'private_taxonomy'}->[0]\n";
+    	print "\n\nFound the existing private taxonomy workspace named $new_ws\n";
     	$private_tax_ws_ref = $ws_hash->{"private_taxonomy"}->[6];
 
     }
     else{
 
-    	print "creating a new workspace for storing private taxnomies\n";
+    	print "\n\nCreating a new workspace $new_ws for storing private taxnomies\n";
     	my $create_ws_params = {
-    		workspace => "private_taxonomy",
+    		workspace => $new_ws,
     		globalread => "n",
     		description => "store private taxonomy objects"
     	};
