@@ -28,6 +28,7 @@ module taxonomy_service {
         string category;
         string parent;
         string parent_ref;
+        int private;
     } DropDownItem;
 
     typedef structure{

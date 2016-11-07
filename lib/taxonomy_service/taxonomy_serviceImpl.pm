@@ -5,7 +5,7 @@ use Bio::KBase::Exceptions;
 # http://semver.org
 our $VERSION = '0.0.1';
 our $GIT_URL = 'https://github.com/janakagithub/taxonomy_service.git';
-our $GIT_COMMIT_HASH = 'c774e09f2e244cd29a57c6d9dbe4595676650fd6';
+our $GIT_COMMIT_HASH = 'b2eb1f7df914b29a3af122fb7e1f6092e5daab23';
 
 =head1 NAME
 
@@ -27,6 +27,7 @@ use POSIX;
 use FindBin qw($Bin);
 use JSON;
 use LWP::UserAgent;
+use Try::Tiny;
 use XML::Simple;
 use WebService::Solr;
 use WebService::Solr::Query;
@@ -36,11 +37,9 @@ use WebService::Solr::Query;
 sub search_solr
 {
     my ($taxonomy_core, $solrurl, $search, $start, $limit, $method) = @_;
-
 	my $url = $solrurl."/$taxonomy_core/select?q=*%3A*&fq=$search*&start=$start&rows=$limit&fl=scientific_name%2Cparent_taxon_ref%2Cws_ref&wt=json&indent=true";
 	my $method = 'GET';
 	my $jsonf = solr_request ($method, $url);
-
 	return $jsonf;
 }
 
@@ -49,89 +48,177 @@ sub solr_request
 
 	my ($method, $url) = @_;
 	# create a HTTP request
-	my $ua = LWP::UserAgent->new();
-	my $request = HTTP::Request->new();
-	$request->method($method);
-	$request->uri($url);
+	try {
+        my $ua = LWP::UserAgent->new();
+    	my $request = HTTP::Request->new();
+    	$request->method($method);
+    	$request->uri($url);
 
-	my $response = $ua->request($request);
-	my $sn = $response->content();
-	my $code = $response->code();
-	my $jsonf = JSON::from_json($sn);
+    	my $response = $ua->request($request);
+    	my $sn = $response->content();
+    	my $code = $response->code();
+        my $jsonf = JSON::from_json($sn);
 
-	return $jsonf;
+        return $jsonf;
+    }catch {
+    # Print out the exception that occurred
+    warn "SOLR request return code 403, caught error: $_";
+    die;
+    }
+
+}
+
+sub get_parent
+{
+    my ($solrurl, $taxonomy_core, $ref, $method, $def) = @_;
+    my $url = $solrurl."/$taxonomy_core/select?q=*%3A*&fq=$ref&fl=scientific_name%2Cparent_taxon_ref%2Cws_ref&df=$def&wt=json&indent=true";
+    my $jsonf = solr_request ($method, $url);
+    return $jsonf;
 }
 
 sub search_parents
 {
-	my ($public_search, $taxonomy_core, $solrurl) = @_;
+	my ($public_search, $taxonomy_core, $solrurl, $search_word, $method, $private) = @_;
 	my $hits_list = [];
-	for (my $i=0; $i< @{$public_search}; $i++){
-		my $sci_name = $public_search->[$i]->{scientific_name};
-		my $parent_ref = $public_search->[$i]->{parent_taxon_ref};
+    if ($private == 1){
+        $private =1;
+    }
+    else{
+        $private =0;
+    }
 
-		if (defined $public_search->[$i]->{parent_taxon_ref}){
-			my $url = $solrurl."/$taxonomy_core/select?q=*%3A*&fq=$public_search->[$i]->{parent_taxon_ref}&fl=scientific_name&df=ws_ref&wt=json&indent=true";
-			my $method = 'GET';
-			my $jsonf = solr_request ($method, $url);
-		    if ($jsonf->{responseHeader}->{params}->{fq} eq $public_search->[$i]->{parent_taxon_ref}){
-		    	my $each_taxon = {
-	        	label => $public_search->[$i]->{scientific_name},
-	        	id => $public_search->[$i]->{ws_ref},
-	        	parent => $jsonf->{response}->{docs}->[0]->{scientific_name},
-	        	parent_ref => $public_search->[$i]->{parent_taxon_ref},
-	        	category => ''
-	    		};
-	    		push ($hits_list, $each_taxon);
 
-		    }
-			else{
-				next;
-			}
-		}
-		else{
-			my $each_taxon = {
-	        	label => $public_search->[$i]->{scientific_name},
-	        	id => $public_search->[$i]->{ws_ref},
-	        	parent => "Root taxon or unknown parent",
-	        	parent_ref => undef,
-	        	category => ''
-	    	};
-	    	push ($hits_list, $each_taxon);
-		}
-	}
+    if (@{$public_search}){
+        for (my $i=0; $i< @{$public_search}; $i++){
+            my $sci_name = $public_search->[$i]->{scientific_name};
+            my $parent_ref = $public_search->[$i]->{parent_taxon_ref};
+            if (defined $public_search->[$i]->{parent_taxon_ref}){
+                my $def = "ws_ref";
+                my$jsonf = get_parent ($solrurl, $taxonomy_core, $public_search->[$i]->{parent_taxon_ref}, $method, $def);
+                #print &Dumper ($jsonf);
+                #die;
+                if ($jsonf->{responseHeader}->{params}->{fq} eq $public_search->[$i]->{parent_taxon_ref}){
+                    my $each_taxon = {
+                    label => $public_search->[$i]->{scientific_name},
+                    id => $public_search->[$i]->{ws_ref},
+                    parent => $jsonf->{response}->{docs}->[0]->{scientific_name},
+                    parent_ref => $public_search->[$i]->{parent_taxon_ref},
+                    category => '',
+                    private => $private
+                    };
+                    push ($hits_list, $each_taxon);
+                }
+            }
+            else{
+                my $each_taxon = {
+                label => $public_search->[$i]->{scientific_name},
+                id => $public_search->[$i]->{ws_ref},
+                parent => "Unknown",
+                parent_ref => "Unknown",
+                category => '',
+                private => $private
+                };
+                push ($hits_list, $each_taxon);
+            }
+        }
+    }
+    else{
+        #my $s1 =~ s/str.//g, $search_word
+        my @ps = split /\s+/, $search_word;
+        my $psaL = @ps;
+        for (my $i=0; $i< $psaL-1; $i++){
+            pop (@ps);
+            my $partial_string = join ("\\ ", @ps);
+            #print "@ps\t *$partial_string*\n";
+            my $def = "scientific_name";
+            my $jsonf = get_parent ($solrurl, $taxonomy_core, $partial_string, $method, $def);
+            if ($jsonf->{response}->{numFound} > 0){
+                my $each_taxon = {
+                    label => $search_word,
+                    id => "new",  # this is the reference for new search word e.g K. oxytoca janaka
+                    parent => $jsonf->{response}->{docs}->[0]->{scientific_name},
+                    parent_ref => $jsonf->{response}->{docs}->[0]->{ws_ref},
+                    private => $private,
+                    category => ''
+                };
+                push ($hits_list, $each_taxon);
+                last;
+            }
+            elsif( ($jsonf->{response}->{numFound} < 1 ) && ($search_word =~ /str/) ){
+                $partial_string =~ s/substr.\\ //g;
+                $partial_string =~ s/str.\\ //g;
+                #print "modified partial string\t *$partial_string*\n";
+                my $jsonf = get_parent ($solrurl, $taxonomy_core, $partial_string, $method, $def);
 
+                if ($jsonf->{response}->{numFound} > 0){
+                my $each_taxon = {
+                    label => $search_word,
+                    id => "new",  # this is the reference for new search word e.g K. oxytoca janaka
+                    parent => $jsonf->{response}->{docs}->[0]->{scientific_name},
+                    parent_ref => $jsonf->{response}->{docs}->[0]->{ws_ref},
+                    private => $private,
+                    category => ''
+                    };
+
+                push ($hits_list, $each_taxon);
+                last;
+                }
+            }
+            else{
+                next;
+            }
+        }
+    }
+
+
+    if (!@{$hits_list}){
+        my $each_taxon = {
+            label => $search_word,
+            id => "new",  # this is the reference for new search word e.g K. oxytoca janaka
+            parent => "Unknown",
+            parent_ref => "Unknown",
+            category => ''
+            };
+
+    push ($hits_list, $each_taxon);
+    }
+    #print &Dumper ($hits_list);
 	return $hits_list;
 }
 
 sub search_private
 {
-    my ($public_search, $wsClient) = @_;
+    my ($search_word, $wsClient,$taxonomy_core, $solrurl, $method,$private ) = @_;
     my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
 	my $token=$ctx->token;
 	my $provenance=$ctx->provenance;
 	my $hits_list = [];
-	for (my $i=0; $i< @{$public_search}; $i++){
-		my $sci_name = $public_search->[$i]->{scientific_name};
-		my $parent_ref = $public_search->[$i]->{parent_taxon_ref};
-		print "$sci_name\t$parent_ref\n";
-		my $parent_taxon;
-		eval {
-	        $parent_taxon=$wsClient->get_objects([{ref=>$parent_ref}])->[0]{data};
-	        my $each_taxon = {
-		        	label => $public_search->[$i]->{scientific_name},
-		        	id => $public_search->[$i]->{parent_taxon_ref},
-		        	parent => $parent_taxon->{scientific_name},
-		        	category => ''
-		    	};
-		    	push ($hits_list, $each_taxon);
-    	};
-    	if ($@) {
-        die "Error loading taxons from workspace:\n".$@;
-    	}
+    my $usrws = $ctx->{user_id}.":private_taxonomy";
 
-	}
-	return $hits_list;
+    my $ws_params = {
+        workspaces=> [$usrws],
+        type => 'KBaseGenomeAnnotations.Taxon'
+        };
+
+    my $obj_info_list = $wsClient->list_objects($ws_params);
+    my $psearch = [];
+    for(my $i=0; $i< @{$obj_info_list}; $i++){
+        my $info_ref = $obj_info_list->[$i];
+        my $ob_ref =  $info_ref->[6]."/".$info_ref->[0]."/".$info_ref->[4];
+        my $taxon=$wsClient->get_objects([{ref=>$ob_ref}])->[0]{data};
+        #print "$taxon->{scientific_name}\n";
+        if ($taxon->{scientific_name} =~ /$search_word/){
+            my $private_search = {
+                scientific_name => $taxon->{scientific_name},
+                parent_taxon_ref => $taxon->{parent_taxon_ref},
+                ws_ref => $ob_ref
+            };
+            push ($psearch, $private_search);
+        }
+    }
+    #print &Dumper ($psearch);
+    my $jsonf = search_parents($psearch, $taxonomy_core, $solrurl, $search_word, $method, $private);
+	return $jsonf;
 }
 
 #END_HEADER
@@ -202,6 +289,7 @@ DropDownItem is a reference to a hash where the following keys are defined:
 	category has a value which is a string
 	parent has a value which is a string
 	parent_ref has a value which is a string
+	private has a value which is an int
 
 </pre>
 
@@ -226,6 +314,7 @@ DropDownItem is a reference to a hash where the following keys are defined:
 	category has a value which is a string
 	parent has a value which is a string
 	parent_ref has a value which is a string
+	private has a value which is an int
 
 
 =end text
@@ -257,11 +346,11 @@ sub search_taxonomy
     my($output);
     #BEGIN search_taxonomy
 
-
-    #########################Begin of temp code based on list of taxons###########################
     my $token=$ctx->token;
     my $provenance=$ctx->provenance;
     my $wsClient=Bio::KBase::workspace::Client->new($self->{'workspace-url'},token=>$token);
+
+#########################Begin of temp code where search is based on list of taxons in a file instead of SOLR###########################
     open INFILE, "/kb/module/data/orglist.txt" or die "Couldn't open html file $!\n";
 
     my %sHash;
@@ -290,17 +379,25 @@ sub search_taxonomy
 	my $arLen = @searchHits;
     #print "$arLen\n";
 
-##############################################End of temp search out of list of taxons ############################
+##############################################End of temp code for search ############################
 
-########################################Search based on the SOLR###################################################
+########################################Search based on SOLR###################################################
 	my $taxonomy_core = "taxonomy";
 	my $solrurl = $self->{_SOLR_URL};
 	my $method = 'GET';
+    my $private_search =1;
+    my $private_list;
 
-	# this needs to be changed as two functions in spec a.) search b.) search parents
+
 	my $search_response = search_solr($taxonomy_core, $self->{_SOLR_URL}, $params->{search}, $params->{start}, $params->{limit}, $method);
-	my $hits_list = search_parents ($search_response->{response}->{docs},$taxonomy_core, $self->{_SOLR_URL});
-	#my $list_with_parents = search_private ($search_response->{response}->{docs}, $wsClient);
+    my $hits_list = search_parents ($search_response->{response}->{docs},$taxonomy_core, $self->{_SOLR_URL},$params->{search}, $method);
+
+    if ($private_search == 1){
+        $private_list = search_private ($params->{search}, $wsClient,$taxonomy_core, $self->{_SOLR_URL}, $method, $private_search);
+        push @$hits_list, $_ foreach @$private_list;
+        $search_response->{response}->{numFound} += @{$private_list};
+
+    }
 
 	$output = {
 	    	hits => $hits_list,
@@ -339,15 +436,14 @@ $params is a taxonomy_service.CreateTaxonomyInputParams
 $output is a taxonomy_service.CreateTaxonomyOut
 CreateTaxonomyInputParams is a reference to a hash where the following keys are defined:
 	scientific_name has a value which is a string
+	parent has a value which is a string
 	taxonomic_id has a value which is an int
 	kingdom has a value which is a string
 	domain has a value which is a string
 	rank has a value which is a string
-	embl_code has a value which is a string
 	comments has a value which is a string
-	genetic_code has a value which is an int
+	genetic_code has a value which is a string
 	aliases has a value which is a reference to a list where each element is a string
-	scientific_lineage has a value which is a reference to a list where each element is a string
 	workspace has a value which is a string
 CreateTaxonomyOut is a reference to a hash where the following keys are defined:
 	ref has a value which is a taxonomy_service.ObjectReference
@@ -364,15 +460,14 @@ $params is a taxonomy_service.CreateTaxonomyInputParams
 $output is a taxonomy_service.CreateTaxonomyOut
 CreateTaxonomyInputParams is a reference to a hash where the following keys are defined:
 	scientific_name has a value which is a string
+	parent has a value which is a string
 	taxonomic_id has a value which is an int
 	kingdom has a value which is a string
 	domain has a value which is a string
 	rank has a value which is a string
-	embl_code has a value which is a string
 	comments has a value which is a string
-	genetic_code has a value which is an int
+	genetic_code has a value which is a string
 	aliases has a value which is a reference to a list where each element is a string
-	scientific_lineage has a value which is a reference to a list where each element is a string
 	workspace has a value which is a string
 CreateTaxonomyOut is a reference to a hash where the following keys are defined:
 	ref has a value which is a taxonomy_service.ObjectReference
@@ -411,8 +506,17 @@ sub create_taxonomy
     my $token=$ctx->token;
     my $provenance=$ctx->provenance;
     my $wsClient=Bio::KBase::workspace::Client->new($self->{'workspace-url'},token=>$token);
+
+    #narrative input widget params - hardcoded for now
     $params->{genetic_code} = 11;
     $params->{parent} = "1779/87821/1";
+
+    my $taxonomy_core = "taxonomy_ci";
+    my $solrurl = $self->{_SOLR_URL};
+    my $method = 'GET';
+    my $private_search =1;
+    my $private_list;
+
 
     #checking for private taxonomy ws
     my $private_tax_ws_ref;
@@ -427,22 +531,22 @@ sub create_taxonomy
 	my $new_ws = $ctx->{user_id}.":private_taxonomy";
     if (exists $ws_hash->{$new_ws}){
 
-    	print "\n\nFound the existing private taxonomy workspace named $new_ws\n";
+    	print "\n\nFound an existing workspace $new_ws that is assigned for storing private taxa, using $new_ws...  \n";
     	$private_tax_ws_ref = $ws_hash->{"private_taxonomy"}->[6];
 
     }
     else{
 
-    	print "\n\nCreating a new workspace $new_ws for storing private taxnomies\n";
+    	print "\n\nCreating a new workspace $new_ws for storing private taxa\n";
     	my $create_ws_params = {
     		workspace => $new_ws,
     		globalread => "n",
     		description => "store private taxonomy objects"
     	};
 
-    	 my $info = $wsClient->create_workspace($create_ws_params);
-    	 $private_tax_ws_ref = $info->[0];
-    	 #print &Dumper ($info);
+    	my $info = $wsClient->create_workspace($create_ws_params);
+    	$private_tax_ws_ref = $info->[0];
+    	#print &Dumper ($info);
     }
 
 
@@ -487,11 +591,11 @@ sub create_taxonomy
     #print &Dumper ($info_ref);
 
 
-     $output = {
-     	scientific_name => $params->{scientific_name},
+    $output = {
+        scientific_name => $params->{scientific_name},
      	ref => $ob_ref
 
-     };
+    };
 
     print "\n\nSucessfully created new taxon for $params->{scientific_name}\n\n";
     print &Dumper ($output);
@@ -996,6 +1100,7 @@ id has a value which is a string
 category has a value which is a string
 parent has a value which is a string
 parent_ref has a value which is a string
+private has a value which is an int
 
 </pre>
 
@@ -1009,6 +1114,7 @@ id has a value which is a string
 category has a value which is a string
 parent has a value which is a string
 parent_ref has a value which is a string
+private has a value which is an int
 
 
 =end text
@@ -1062,15 +1168,14 @@ hits has a value which is a reference to a list where each element is a taxonomy
 <pre>
 a reference to a hash where the following keys are defined:
 scientific_name has a value which is a string
+parent has a value which is a string
 taxonomic_id has a value which is an int
 kingdom has a value which is a string
 domain has a value which is a string
 rank has a value which is a string
-embl_code has a value which is a string
 comments has a value which is a string
-genetic_code has a value which is an int
+genetic_code has a value which is a string
 aliases has a value which is a reference to a list where each element is a string
-scientific_lineage has a value which is a reference to a list where each element is a string
 workspace has a value which is a string
 
 </pre>
@@ -1081,15 +1186,14 @@ workspace has a value which is a string
 
 a reference to a hash where the following keys are defined:
 scientific_name has a value which is a string
+parent has a value which is a string
 taxonomic_id has a value which is an int
 kingdom has a value which is a string
 domain has a value which is a string
 rank has a value which is a string
-embl_code has a value which is a string
 comments has a value which is a string
-genetic_code has a value which is an int
+genetic_code has a value which is a string
 aliases has a value which is a reference to a list where each element is a string
-scientific_lineage has a value which is a reference to a list where each element is a string
 workspace has a value which is a string
 
 
