@@ -80,14 +80,6 @@ sub search_parents
 {
 	my ($public_search, $taxonomy_core, $solrurl, $search_word, $method, $category) = @_;
 	my $hits_list = [];
-=head
-    if ($private == 1){
-        $private =1;
-    }
-    else{
-        $private =0;
-    }
-=cut
 
     if (@{$public_search}){
         for (my $i=0; $i< @{$public_search}; $i++){
@@ -454,7 +446,7 @@ sub search_taxonomy
 	    	num_of_hits =>  $search_response->{response}->{numFound}
 	};
 
-    print &Dumper ($output);
+    #print &Dumper ($output);
     return $output;
 
     #END search_taxonomy
