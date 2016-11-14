@@ -17,9 +17,11 @@ module taxonomy_service {
     typedef structure {
         int private;
         int public;
+        int local;
         string search;
         int limit;
         int start;
+        string workspace;
     }DropDownItemInputParams;
 
     typedef structure {
@@ -28,7 +30,6 @@ module taxonomy_service {
         string category;
         string parent;
         string parent_ref;
-        int private;
     } DropDownItem;
 
     typedef structure{
@@ -90,23 +91,27 @@ module taxonomy_service {
     }GetTaxonomiesOut;
 
 
-
- funcdef get_taxonomies_by_id(GetTaxonomiesIdInputParams params) returns (GetTaxonomiesOut output) authentication required;
+    typedef structure{
+        string genome_ref;
+        string taxa_ref;
+        string parent_taxa_ref;
+    }ChangeTaxaInputParams;
 
     typedef structure{
-        string search;
-        int limit;
-        int start;
-    }GetTaxonomiesQueryInputParams;
+        string genome_ref;
+        string taxa_ref;
+        string genome_name;
+    }ChangeTaxaOut;
 
-
-    funcdef get_taxonomies_by_query (GetTaxonomiesQueryInputParams params) returns (GetTaxonomiesOut output) authentication required;
+    funcdef change_taxa (ChangeTaxaInputParams params) returns (ChangeTaxaOut output) authentication required;
 
     typedef structure{
         string search;
         int limit;
         int start;
     }GetGenomesTaxonomyInputParams;
+
+    funcdef get_taxonomies_by_id(GetTaxonomiesIdInputParams params) returns (GetTaxonomiesOut output) authentication required;
 
     funcdef get_genomes_for_taxonomy (GetGenomesTaxonomyInputParams params) returns (GetTaxonomiesOut output) authentication required;
 };
