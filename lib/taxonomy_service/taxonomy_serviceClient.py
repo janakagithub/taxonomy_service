@@ -37,8 +37,9 @@ class taxonomy_service(object):
         """
         :param params: instance of type "DropDownItemInputParams" ->
            structure: parameter "private" of Long, parameter "public" of
-           Long, parameter "search" of String, parameter "limit" of Long,
-           parameter "start" of Long
+           Long, parameter "local" of Long, parameter "search" of String,
+           parameter "limit" of Long, parameter "start" of Long, parameter
+           "workspace" of String
         :returns: instance of type "DropDownData" -> structure: parameter
            "num_of_hits" of Long, parameter "hits" of list of type
            "DropDownItem" -> structure: parameter "label" of String,
@@ -53,12 +54,11 @@ class taxonomy_service(object):
         """
         :param params: instance of type "CreateTaxonomyInputParams" ->
            structure: parameter "scientific_name" of String, parameter
-           "taxonomic_id" of Long, parameter "kingdom" of String, parameter
-           "domain" of String, parameter "rank" of String, parameter
-           "embl_code" of String, parameter "comments" of String, parameter
-           "genetic_code" of Long, parameter "aliases" of list of String,
-           parameter "scientific_lineage" of list of String, parameter
-           "workspace" of String
+           "parent" of String, parameter "taxonomic_id" of Long, parameter
+           "kingdom" of String, parameter "domain" of String, parameter
+           "rank" of String, parameter "comments" of String, parameter
+           "genetic_code" of String, parameter "aliases" of list of String,
+           parameter "workspace" of String
         :returns: instance of type "CreateTaxonomyOut" -> structure:
            parameter "ref" of type "ObjectReference" (workspace ref to an
            object), parameter "scientific_name" of String
@@ -91,28 +91,17 @@ class taxonomy_service(object):
             'taxonomy_service.get_taxonomies_by_id',
             [params], self._service_ver, context)
 
-    def get_taxonomies_by_query(self, params, context=None):
+    def change_taxa(self, params, context=None):
         """
-        :param params: instance of type "GetTaxonomiesQueryInputParams" ->
-           structure: parameter "search" of String, parameter "limit" of
-           Long, parameter "start" of Long
-        :returns: instance of type "GetTaxonomiesOut" -> structure: parameter
-           "taxon_objects" of list of type "Taxon" -> structure: parameter
-           "children" of list of type "ObjectReference" (workspace ref to an
-           object), parameter "decorated_children" of list of type
-           "TaxonInfo" -> structure: parameter "ref" of type
-           "ObjectReference" (workspace ref to an object), parameter
-           "scientific_name" of String, parameter "scientific_lineage" of
-           list of String, parameter "decorated_scientific_lineage" of list
-           of type "TaxonInfo" -> structure: parameter "ref" of type
-           "ObjectReference" (workspace ref to an object), parameter
-           "scientific_name" of String, parameter "scientific_name" of
-           String, parameter "taxonomic_id" of Long, parameter "kingdom" of
-           String, parameter "domain" of String, parameter "genetic_code" of
-           Long, parameter "aliases" of list of String
+        :param params: instance of type "ChangeTaxaInputParams" -> structure:
+           parameter "genome_ref" of String, parameter "taxa_ref" of String,
+           parameter "parent_taxa_ref" of String
+        :returns: instance of type "ChangeTaxaOut" -> structure: parameter
+           "genome_ref" of String, parameter "taxa_ref" of String, parameter
+           "genome_name" of String
         """
         return self._client.call_method(
-            'taxonomy_service.get_taxonomies_by_query',
+            'taxonomy_service.change_taxa',
             [params], self._service_ver, context)
 
     def get_genomes_for_taxonomy(self, params, context=None):

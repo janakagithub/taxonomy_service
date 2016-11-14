@@ -21,21 +21,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "scientific_name",
+    "parent",
     "taxonomic_id",
     "kingdom",
     "domain",
     "rank",
-    "embl_code",
     "comments",
     "genetic_code",
     "aliases",
-    "scientific_lineage",
     "workspace"
 })
 public class CreateTaxonomyInputParams {
 
     @JsonProperty("scientific_name")
     private java.lang.String scientificName;
+    @JsonProperty("parent")
+    private java.lang.String parent;
     @JsonProperty("taxonomic_id")
     private Long taxonomicId;
     @JsonProperty("kingdom")
@@ -44,16 +45,12 @@ public class CreateTaxonomyInputParams {
     private java.lang.String domain;
     @JsonProperty("rank")
     private java.lang.String rank;
-    @JsonProperty("embl_code")
-    private java.lang.String emblCode;
     @JsonProperty("comments")
     private java.lang.String comments;
     @JsonProperty("genetic_code")
-    private Long geneticCode;
+    private java.lang.String geneticCode;
     @JsonProperty("aliases")
     private List<String> aliases;
-    @JsonProperty("scientific_lineage")
-    private List<String> scientificLineage;
     @JsonProperty("workspace")
     private java.lang.String workspace;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
@@ -70,6 +67,21 @@ public class CreateTaxonomyInputParams {
 
     public CreateTaxonomyInputParams withScientificName(java.lang.String scientificName) {
         this.scientificName = scientificName;
+        return this;
+    }
+
+    @JsonProperty("parent")
+    public java.lang.String getParent() {
+        return parent;
+    }
+
+    @JsonProperty("parent")
+    public void setParent(java.lang.String parent) {
+        this.parent = parent;
+    }
+
+    public CreateTaxonomyInputParams withParent(java.lang.String parent) {
+        this.parent = parent;
         return this;
     }
 
@@ -133,21 +145,6 @@ public class CreateTaxonomyInputParams {
         return this;
     }
 
-    @JsonProperty("embl_code")
-    public java.lang.String getEmblCode() {
-        return emblCode;
-    }
-
-    @JsonProperty("embl_code")
-    public void setEmblCode(java.lang.String emblCode) {
-        this.emblCode = emblCode;
-    }
-
-    public CreateTaxonomyInputParams withEmblCode(java.lang.String emblCode) {
-        this.emblCode = emblCode;
-        return this;
-    }
-
     @JsonProperty("comments")
     public java.lang.String getComments() {
         return comments;
@@ -164,16 +161,16 @@ public class CreateTaxonomyInputParams {
     }
 
     @JsonProperty("genetic_code")
-    public Long getGeneticCode() {
+    public java.lang.String getGeneticCode() {
         return geneticCode;
     }
 
     @JsonProperty("genetic_code")
-    public void setGeneticCode(Long geneticCode) {
+    public void setGeneticCode(java.lang.String geneticCode) {
         this.geneticCode = geneticCode;
     }
 
-    public CreateTaxonomyInputParams withGeneticCode(Long geneticCode) {
+    public CreateTaxonomyInputParams withGeneticCode(java.lang.String geneticCode) {
         this.geneticCode = geneticCode;
         return this;
     }
@@ -190,21 +187,6 @@ public class CreateTaxonomyInputParams {
 
     public CreateTaxonomyInputParams withAliases(List<String> aliases) {
         this.aliases = aliases;
-        return this;
-    }
-
-    @JsonProperty("scientific_lineage")
-    public List<String> getScientificLineage() {
-        return scientificLineage;
-    }
-
-    @JsonProperty("scientific_lineage")
-    public void setScientificLineage(List<String> scientificLineage) {
-        this.scientificLineage = scientificLineage;
-    }
-
-    public CreateTaxonomyInputParams withScientificLineage(List<String> scientificLineage) {
-        this.scientificLineage = scientificLineage;
         return this;
     }
 
@@ -235,7 +217,7 @@ public class CreateTaxonomyInputParams {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((((((((((((("CreateTaxonomyInputParams"+" [scientificName=")+ scientificName)+", taxonomicId=")+ taxonomicId)+", kingdom=")+ kingdom)+", domain=")+ domain)+", rank=")+ rank)+", emblCode=")+ emblCode)+", comments=")+ comments)+", geneticCode=")+ geneticCode)+", aliases=")+ aliases)+", scientificLineage=")+ scientificLineage)+", workspace=")+ workspace)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((((((("CreateTaxonomyInputParams"+" [scientificName=")+ scientificName)+", parent=")+ parent)+", taxonomicId=")+ taxonomicId)+", kingdom=")+ kingdom)+", domain=")+ domain)+", rank=")+ rank)+", comments=")+ comments)+", geneticCode=")+ geneticCode)+", aliases=")+ aliases)+", workspace=")+ workspace)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

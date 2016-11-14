@@ -21,9 +21,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "private",
     "public",
+    "local",
     "search",
     "limit",
-    "start"
+    "start",
+    "workspace"
 })
 public class DropDownItemInputParams {
 
@@ -31,12 +33,16 @@ public class DropDownItemInputParams {
     private Long _private;
     @JsonProperty("public")
     private Long _public;
+    @JsonProperty("local")
+    private Long local;
     @JsonProperty("search")
     private String search;
     @JsonProperty("limit")
     private Long limit;
     @JsonProperty("start")
     private Long start;
+    @JsonProperty("workspace")
+    private String workspace;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("private")
@@ -66,6 +72,21 @@ public class DropDownItemInputParams {
 
     public DropDownItemInputParams withPublic(Long _public) {
         this._public = _public;
+        return this;
+    }
+
+    @JsonProperty("local")
+    public Long getLocal() {
+        return local;
+    }
+
+    @JsonProperty("local")
+    public void setLocal(Long local) {
+        this.local = local;
+    }
+
+    public DropDownItemInputParams withLocal(Long local) {
+        this.local = local;
         return this;
     }
 
@@ -114,6 +135,21 @@ public class DropDownItemInputParams {
         return this;
     }
 
+    @JsonProperty("workspace")
+    public String getWorkspace() {
+        return workspace;
+    }
+
+    @JsonProperty("workspace")
+    public void setWorkspace(String workspace) {
+        this.workspace = workspace;
+    }
+
+    public DropDownItemInputParams withWorkspace(String workspace) {
+        this.workspace = workspace;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -126,7 +162,7 @@ public class DropDownItemInputParams {
 
     @Override
     public String toString() {
-        return ((((((((((((("DropDownItemInputParams"+" [_private=")+ _private)+", _public=")+ _public)+", search=")+ search)+", limit=")+ limit)+", start=")+ start)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((("DropDownItemInputParams"+" [_private=")+ _private)+", _public=")+ _public)+", local=")+ local)+", search=")+ search)+", limit=")+ limit)+", start=")+ start)+", workspace=")+ workspace)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

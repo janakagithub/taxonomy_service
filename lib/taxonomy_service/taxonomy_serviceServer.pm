@@ -31,7 +31,7 @@ our %return_counts = (
         'search_taxonomy' => 1,
         'create_taxonomy' => 1,
         'get_taxonomies_by_id' => 1,
-        'get_taxonomies_by_query' => 1,
+        'change_taxa' => 1,
         'get_genomes_for_taxonomy' => 1,
         'status' => 1,
 );
@@ -40,7 +40,7 @@ our %method_authentication = (
         'search_taxonomy' => 'required',
         'create_taxonomy' => 'required',
         'get_taxonomies_by_id' => 'required',
-        'get_taxonomies_by_query' => 'required',
+        'change_taxa' => 'required',
         'get_genomes_for_taxonomy' => 'required',
 );
 
@@ -51,7 +51,7 @@ sub _build_valid_methods
         'search_taxonomy' => 1,
         'create_taxonomy' => 1,
         'get_taxonomies_by_id' => 1,
-        'get_taxonomies_by_query' => 1,
+        'change_taxa' => 1,
         'get_genomes_for_taxonomy' => 1,
         'status' => 1,
     };

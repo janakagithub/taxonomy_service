@@ -215,19 +215,19 @@ public class TaxonomyServiceClient {
     }
 
     /**
-     * <p>Original spec-file function name: get_taxonomies_by_query</p>
+     * <p>Original spec-file function name: change_taxa</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link us.kbase.taxonomyservice.GetTaxonomiesQueryInputParams GetTaxonomiesQueryInputParams}
-     * @return   parameter "output" of type {@link us.kbase.taxonomyservice.GetTaxonomiesOut GetTaxonomiesOut}
+     * @param   params   instance of type {@link us.kbase.taxonomyservice.ChangeTaxaInputParams ChangeTaxaInputParams}
+     * @return   parameter "output" of type {@link us.kbase.taxonomyservice.ChangeTaxaOut ChangeTaxaOut}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public GetTaxonomiesOut getTaxonomiesByQuery(GetTaxonomiesQueryInputParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public ChangeTaxaOut changeTaxa(ChangeTaxaInputParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
-        TypeReference<List<GetTaxonomiesOut>> retType = new TypeReference<List<GetTaxonomiesOut>>() {};
-        List<GetTaxonomiesOut> res = caller.jsonrpcCall("taxonomy_service.get_taxonomies_by_query", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        TypeReference<List<ChangeTaxaOut>> retType = new TypeReference<List<ChangeTaxaOut>>() {};
+        List<ChangeTaxaOut> res = caller.jsonrpcCall("taxonomy_service.change_taxa", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
