@@ -451,7 +451,7 @@ sub search_taxonomy
 	    	num_of_hits =>  $search_response->{response}->{numFound}
 	};
 
-    print &Dumper ($output);
+    #print &Dumper ($output);
     return $output;
 
     #END search_taxonomy
