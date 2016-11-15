@@ -16,7 +16,9 @@
             "advanced": false,
             "allow_multiple": false,
             "default_values": [ "Klebsiella sp. janaka" ],
-            "field_type": "text",
+            "field_type": "autocorrect",
+            "service" : "taxonomy_service",
+            "requires_selection" : true,
             "text_options": {
                 "validate_as": "text"
             }
