@@ -177,7 +177,7 @@ sub search_parents
 
 sub search_private
 {
-    my ($search_word, $wsClient,$taxonomy_core, $solrurl, $method, $private ) = @_;
+    my ($search_word, $wsClient,$taxonomy_core, $solrurl, $method, $private, $start, $limit ) = @_;
     my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
 	my $token=$ctx->token;
 	my $provenance=$ctx->provenance;
@@ -206,13 +206,14 @@ sub search_private
         }
     }
     #print &Dumper ($psearch);
+    $psearch->[$start..$limit];
     my $jsonf = search_parents($psearch, $taxonomy_core, $solrurl, $search_word, $method, $private);
 	return $jsonf;
 }
 
 sub search_local
 {
-    my ($search_word, $wsClient,$taxonomy_core, $solrurl, $method, $ws, $local ) = @_;
+    my ($search_word, $wsClient,$taxonomy_core, $solrurl, $method, $ws, $local, $start, $limit ) = @_;
     my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
     my $token=$ctx->token;
     my $provenance=$ctx->provenance;
@@ -249,6 +250,7 @@ sub search_local
         }
     }
     #print &Dumper ($psearch);
+    $psearch->[$start..$limit];
     my $jsonf = search_parents($psearch, $taxonomy_core, $solrurl, $search_word, $method, $local);
     return $jsonf;
 }
@@ -425,12 +427,15 @@ sub search_taxonomy
 
     if ($params->{public} != 0){
         $search_response = search_solr($taxonomy_core, $self->{_SOLR_URL}, $params->{search}, $params->{start}, $params->{limit}, $method);
-        $hits_list = search_parents ($search_response->{response}->{docs},$taxonomy_core, $self->{_SOLR_URL},$params->{search}, $method, $category);
+        $search_response->{response}->{docs}->[$params->{start}..$params->{limit}];
+        $hits_list = search_parents ($search_response->{response}->{docs}, $taxonomy_core, $self->{_SOLR_URL},$params->{search}, $method, $category);
+
+
     }
 
     if ($params->{private} != 0){
         $category = "private";
-        $private_list = search_private ($params->{search}, $wsClient,$taxonomy_core, $self->{_SOLR_URL}, $method, $category);
+        $private_list = search_private ($params->{search}, $wsClient,$taxonomy_core, $self->{_SOLR_URL}, $method, $category, $params->{start}, $params->{limit} );
         push @$hits_list, $_ foreach @$private_list;
         $search_response->{response}->{numFound} += @{$private_list};
 
@@ -438,7 +443,7 @@ sub search_taxonomy
 
     if ($params->{local} != 0){
         $category = "local";
-        my $local_list = search_local ($params->{search}, $wsClient,$taxonomy_core, $self->{_SOLR_URL}, $method, $params->{workspace}, $category);
+        my $local_list = search_local ($params->{search}, $wsClient,$taxonomy_core, $self->{_SOLR_URL}, $method, $params->{workspace}, $category, $params->{start}, $params->{limit});
     }
 
 	$output = {
@@ -446,7 +451,7 @@ sub search_taxonomy
 	    	num_of_hits =>  $search_response->{response}->{numFound}
 	};
 
-    #print &Dumper ($output);
+    print &Dumper ($output);
     return $output;
 
     #END search_taxonomy
@@ -747,6 +752,8 @@ sub get_taxonomies_by_id
     my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
     my($output);
     #BEGIN get_taxonomies_by_id
+
+
     #END get_taxonomies_by_id
     my @_bad_returns;
     (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
