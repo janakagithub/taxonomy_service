@@ -42,7 +42,6 @@ module taxonomy_service {
 
     typedef structure{
         string scientific_name;
-        string parent;
         int taxonomic_id;
         string kingdom;
         string domain;
@@ -93,8 +92,9 @@ module taxonomy_service {
 
     typedef structure{
         string input_genome;
-        string taxa_ref;
-        string parent_taxa_ref;
+        string scientific_name;
+        string workspace;
+        string comments;
     }ChangeTaxaInputParams;
 
     typedef structure{

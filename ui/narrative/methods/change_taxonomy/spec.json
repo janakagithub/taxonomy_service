@@ -61,6 +61,10 @@
                     "target_property": "input_genome"
                 },
                 {
+                    "input_parameter": "comments",
+                    "target_property": "comments"
+                },
+                {
                     "input_parameter": "scientific_name",
                     "target_property": "scientific_name"
                 }

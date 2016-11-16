@@ -2,7 +2,7 @@ package taxonomy_service::taxonomy_serviceImpl;
 use strict;
 use Bio::KBase::Exceptions;
 # Use Semantic Versioning (2.0.0-rc.1)
-# http://semver.org 
+# http://semver.org
 our $VERSION = '0.0.1';
 our $GIT_URL = 'https://github.com/janakagithub/taxonomy_service.git';
 our $GIT_COMMIT_HASH = '58fbbb077c2f9ee0f02e61ba229e378cbb322d54';
@@ -29,8 +29,7 @@ use JSON;
 use LWP::UserAgent;
 use Try::Tiny;
 use XML::Simple;
-use WebService::Solr;
-use WebService::Solr::Query;
+
 
 
 
@@ -1000,7 +999,7 @@ sub get_genomes_for_taxonomy
 
 
 
-=head2 status 
+=head2 status
 
   $return = $obj->status()
 
