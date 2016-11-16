@@ -24,17 +24,6 @@
             }
         },
         {
-            "id": "parent",
-            "optional": false,
-            "advanced": false,
-            "allow_multiple": false,
-            "default_values": [ "Klebsiella" ],
-            "field_type": "text",
-            "text_options": {
-                "validate_as": "text"
-            }
-        },
-        {
             "id": "genetic_code",
             "optional": false,
             "advanced": false,

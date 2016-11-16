@@ -92,7 +92,7 @@ module taxonomy_service {
 
 
     typedef structure{
-        string genome_ref;
+        string input_genome;
         string taxa_ref;
         string parent_taxa_ref;
     }ChangeTaxaInputParams;

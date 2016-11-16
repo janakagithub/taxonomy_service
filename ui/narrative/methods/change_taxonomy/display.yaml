@@ -1,0 +1,46 @@
+#
+# define display information
+#
+name: change or assign taxon to a genome
+tooltip: |
+    This method change or assign new taxa to a given genome
+screenshots: []
+
+icon: icon.png
+
+#
+# define a set of similar methods that might be useful to the user
+#
+suggestions:
+    apps:
+        related:
+            []
+        next:
+            []
+    methods:
+        related:
+            []
+        next:
+            [change_taxa]
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    input_genome :
+        ui-name : |
+            Select Genome
+        short-hint : |
+            Genome Name
+    scientific_name :
+        ui-name : |
+            Scientific Name
+        short-hint : |
+            Scientific Name
+    comments :
+        ui-name : |
+            Comments
+        short-hint : |
+            Comments
+description : |
+    <p>This method change or assign new taxa to a given genome.</p>

@@ -2,10 +2,10 @@ package taxonomy_service::taxonomy_serviceImpl;
 use strict;
 use Bio::KBase::Exceptions;
 # Use Semantic Versioning (2.0.0-rc.1)
-# http://semver.org
+# http://semver.org 
 our $VERSION = '0.0.1';
 our $GIT_URL = 'https://github.com/janakagithub/taxonomy_service.git';
-our $GIT_COMMIT_HASH = 'f45eefe3b46fa02a62157d5a66d19f02f4080efc';
+our $GIT_COMMIT_HASH = '58fbbb077c2f9ee0f02e61ba229e378cbb322d54';
 
 =head1 NAME
 
@@ -451,7 +451,7 @@ sub search_taxonomy
 	    	num_of_hits =>  $search_response->{response}->{numFound}
 	};
 
-    print &Dumper ($output);
+    #print &Dumper ($output);
     return $output;
 
     #END search_taxonomy
@@ -662,6 +662,128 @@ sub create_taxonomy
 
 
 
+=head2 change_taxa
+
+  $output = $obj->change_taxa($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a taxonomy_service.ChangeTaxaInputParams
+$output is a taxonomy_service.ChangeTaxaOut
+ChangeTaxaInputParams is a reference to a hash where the following keys are defined:
+	input_genome has a value which is a string
+	taxa_ref has a value which is a string
+	parent_taxa_ref has a value which is a string
+ChangeTaxaOut is a reference to a hash where the following keys are defined:
+	genome_ref has a value which is a string
+	taxa_ref has a value which is a string
+	genome_name has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a taxonomy_service.ChangeTaxaInputParams
+$output is a taxonomy_service.ChangeTaxaOut
+ChangeTaxaInputParams is a reference to a hash where the following keys are defined:
+	input_genome has a value which is a string
+	taxa_ref has a value which is a string
+	parent_taxa_ref has a value which is a string
+ChangeTaxaOut is a reference to a hash where the following keys are defined:
+	genome_ref has a value which is a string
+	taxa_ref has a value which is a string
+	genome_name has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub change_taxa
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to change_taxa:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'change_taxa');
+    }
+
+    my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
+    my($output);
+    #BEGIN change_taxa
+    print &Dumper ($params);
+    my $token=$ctx->token;
+    my $provenance=$ctx->provenance;
+    my $wsClient=Bio::KBase::workspace::Client->new($self->{'workspace-url'},token=>$token);
+    my $genome_taxon=$wsClient->get_objects([{ref=>$params->{genome_ref}}])->[0]{data};
+    if (defined $genome_taxon->{taxon_ref}){
+        print "Currently your genome is assigned to the taxa $genome_taxon->{taxon_ref}\n";
+    }
+
+    $genome_taxon->{taxon_ref} = $params->{taxa_ref};
+
+    print "You have assigned or modifed the taxa to $params->{taxa_ref} for the genome $genome_taxon->{scientific_name}\n";
+
+     my $obj_info_list = undef;
+    eval {
+        $obj_info_list = $wsClient->save_objects({
+            'workspace'=> $params->{workspace},
+            'objects'=>[{
+                'type'=>'KBaseGenomes.Genome',
+                'data'=>$genome_taxon,
+                'provenance'=>$provenance
+            }]
+        });
+    };
+    if ($@) {
+        die "Error saving modified genome object to workspace:\n".$@;
+    }
+    my $info_ref = $obj_info_list->[0];
+    my $ob_ref =  $info_ref->[6]."/".$info_ref->[0]."/".$info_ref->[4];
+    print &Dumper ($info_ref);
+
+
+    $output = {
+        genome_ref => $ob_ref,
+        taxa_ref => $params->{taxa_ref},
+        genome_name => $genome_taxon->{scientific_name}
+
+    };
+
+    return $output;
+    #END change_taxa
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to change_taxa:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'change_taxa');
+    }
+    return($output);
+}
+
+
+
+
 =head2 get_taxonomies_by_id
 
   $output = $obj->get_taxonomies_by_id($params)
@@ -761,128 +883,6 @@ sub get_taxonomies_by_id
 	my $msg = "Invalid returns passed to get_taxonomies_by_id:\n" . join("", map { "\t$_\n" } @_bad_returns);
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
 							       method_name => 'get_taxonomies_by_id');
-    }
-    return($output);
-}
-
-
-
-
-=head2 change_taxa
-
-  $output = $obj->change_taxa($params)
-
-=over 4
-
-=item Parameter and return types
-
-=begin html
-
-<pre>
-$params is a taxonomy_service.ChangeTaxaInputParams
-$output is a taxonomy_service.ChangeTaxaOut
-ChangeTaxaInputParams is a reference to a hash where the following keys are defined:
-	genome_ref has a value which is a string
-	taxa_ref has a value which is a string
-	parent_taxa_ref has a value which is a string
-ChangeTaxaOut is a reference to a hash where the following keys are defined:
-	genome_ref has a value which is a string
-	taxa_ref has a value which is a string
-	genome_name has a value which is a string
-
-</pre>
-
-=end html
-
-=begin text
-
-$params is a taxonomy_service.ChangeTaxaInputParams
-$output is a taxonomy_service.ChangeTaxaOut
-ChangeTaxaInputParams is a reference to a hash where the following keys are defined:
-	genome_ref has a value which is a string
-	taxa_ref has a value which is a string
-	parent_taxa_ref has a value which is a string
-ChangeTaxaOut is a reference to a hash where the following keys are defined:
-	genome_ref has a value which is a string
-	taxa_ref has a value which is a string
-	genome_name has a value which is a string
-
-
-=end text
-
-
-
-=item Description
-
-
-
-=back
-
-=cut
-
-sub change_taxa
-{
-    my $self = shift;
-    my($params) = @_;
-
-    my @_bad_arguments;
-    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
-    if (@_bad_arguments) {
-	my $msg = "Invalid arguments passed to change_taxa:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'change_taxa');
-    }
-
-    my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
-    my($output);
-    #BEGIN change_taxa
-    print &Dumper ($params);
-    my $token=$ctx->token;
-    my $provenance=$ctx->provenance;
-    my $wsClient=Bio::KBase::workspace::Client->new($self->{'workspace-url'},token=>$token);
-    my $genome_taxon=$wsClient->get_objects([{ref=>$params->{genome_ref}}])->[0]{data};
-    if (defined $genome_taxon->{taxon_ref}){
-        print "Currently your genome is assigned to the taxa $genome_taxon->{taxon_ref}\n";
-    }
-
-    $genome_taxon->{taxon_ref} = $params->{taxa_ref};
-
-    print "You have assigned or modifed the taxa to $params->{taxa_ref} for the genome $genome_taxon->{scientific_name}\n";
-
-     my $obj_info_list = undef;
-    eval {
-        $obj_info_list = $wsClient->save_objects({
-            'workspace'=> $params->{workspace},
-            'objects'=>[{
-                'type'=>'KBaseGenomes.Genome',
-                'data'=>$genome_taxon,
-                'provenance'=>$provenance
-            }]
-        });
-    };
-    if ($@) {
-        die "Error saving modified genome object to workspace:\n".$@;
-    }
-    my $info_ref = $obj_info_list->[0];
-    my $ob_ref =  $info_ref->[6]."/".$info_ref->[0]."/".$info_ref->[4];
-    print &Dumper ($info_ref);
-
-
-    $output = {
-        genome_ref => $ob_ref,
-        taxa_ref => $params->{taxa_ref},
-        genome_name => $genome_taxon->{scientific_name}
-
-    };
-
-    return $output;
-    #END change_taxa
-    my @_bad_returns;
-    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
-    if (@_bad_returns) {
-	my $msg = "Invalid returns passed to change_taxa:\n" . join("", map { "\t$_\n" } @_bad_returns);
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'change_taxa');
     }
     return($output);
 }
@@ -1000,7 +1000,7 @@ sub get_genomes_for_taxonomy
 
 
 
-=head2 status
+=head2 status 
 
   $return = $obj->status()
 
@@ -1449,7 +1449,7 @@ taxon_objects has a value which is a reference to a list where each element is a
 
 <pre>
 a reference to a hash where the following keys are defined:
-genome_ref has a value which is a string
+input_genome has a value which is a string
 taxa_ref has a value which is a string
 parent_taxa_ref has a value which is a string
 
@@ -1460,7 +1460,7 @@ parent_taxa_ref has a value which is a string
 =begin text
 
 a reference to a hash where the following keys are defined:
-genome_ref has a value which is a string
+input_genome has a value which is a string
 taxa_ref has a value which is a string
 parent_taxa_ref has a value which is a string
 

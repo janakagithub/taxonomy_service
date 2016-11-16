@@ -32,11 +32,6 @@ parameters :
             Scientific Name
         short-hint : |
             Scientific Name
-    parent :
-        ui-name : |
-            Parent
-        short-hint : |
-            Parent
     genetic_code :
         ui-name : |
             Genetic Code

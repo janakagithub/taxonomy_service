@@ -1,0 +1,81 @@
+{
+    "ver": "0.0.1",
+    "authors": [
+        "janaka"
+    ],
+    "contact": "https://kbase.us/contact-us/",
+    "categories": ["active"],
+    "widgets": {
+        "input": null,
+        "output": "no-display"
+    },
+    "parameters": [
+        {
+            "id": "input_genome",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": ["KBaseGenomes.Genome"]
+            }
+        },
+        {
+            "id": "scientific_name",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "Klebsiella sp. janaka" ],
+            "field_type": "autocorrect",
+            "service" : "taxonomy_service",
+            "requires_selection" : true,
+            "text_options": {
+                "validate_as": "text"
+            }
+        },
+        {
+            "id": "comments",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "text"
+            }
+        }
+    ],
+    "behavior": {
+        "service-mapping": {
+            "url": "",
+            "name": "taxonomy_service",
+            "method": "change_taxa",
+            "input_mapping": [
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "workspace"
+                },
+                {
+                    "input_parameter": "input_genome",
+                    "target_property": "input_genome"
+                },
+                {
+                    "input_parameter": "scientific_name",
+                    "target_property": "scientific_name"
+                }
+            ],
+            "output_mapping": [
+                {
+                  "constant_value": "KBaseGenomes.Genome",
+                  "target_property": "type"
+                },
+                {
+                  "narrative_system_variable": "workspace",
+                  "target_property": "ws"
+                }
+            ]
+        }
+    },
+    "job_id_output_field": "docker"
+}
