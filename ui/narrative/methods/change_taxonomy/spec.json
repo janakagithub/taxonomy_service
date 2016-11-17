@@ -26,7 +26,7 @@
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": [ "Klebsiella sp. janaka" ],
+            "default_values": [ "Klebsiella oxytoca" ],
             "field_type": "autocomplete",
             "service" : "taxonomy_service",
             "requires_selection" : true,
