@@ -39,7 +39,7 @@ parameters :
             Scientific Name
     output_genome :
         ui-name : |
-            Name the Genome
+            Output Genome
         short-hint : |
             Name of the Genome with modified taxon
 description : |
