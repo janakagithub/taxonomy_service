@@ -5,7 +5,7 @@ use Bio::KBase::Exceptions;
 # http://semver.org
 our $VERSION = '0.0.1';
 our $GIT_URL = 'https://github.com/janakagithub/taxonomy_service.git';
-our $GIT_COMMIT_HASH = '58fbbb077c2f9ee0f02e61ba229e378cbb322d54';
+our $GIT_COMMIT_HASH = '688aa37ad0567499088635c05c324a54e6670092';
 
 =head1 NAME
 
@@ -482,7 +482,6 @@ $params is a taxonomy_service.CreateTaxonomyInputParams
 $output is a taxonomy_service.CreateTaxonomyOut
 CreateTaxonomyInputParams is a reference to a hash where the following keys are defined:
 	scientific_name has a value which is a string
-	parent has a value which is a string
 	taxonomic_id has a value which is an int
 	kingdom has a value which is a string
 	domain has a value which is a string
@@ -506,7 +505,6 @@ $params is a taxonomy_service.CreateTaxonomyInputParams
 $output is a taxonomy_service.CreateTaxonomyOut
 CreateTaxonomyInputParams is a reference to a hash where the following keys are defined:
 	scientific_name has a value which is a string
-	parent has a value which is a string
 	taxonomic_id has a value which is an int
 	kingdom has a value which is a string
 	domain has a value which is a string
@@ -676,8 +674,9 @@ $params is a taxonomy_service.ChangeTaxaInputParams
 $output is a taxonomy_service.ChangeTaxaOut
 ChangeTaxaInputParams is a reference to a hash where the following keys are defined:
 	input_genome has a value which is a string
-	taxa_ref has a value which is a string
-	parent_taxa_ref has a value which is a string
+	scientific_name has a value which is a string
+	workspace has a value which is a string
+	comments has a value which is a string
 ChangeTaxaOut is a reference to a hash where the following keys are defined:
 	genome_ref has a value which is a string
 	taxa_ref has a value which is a string
@@ -693,8 +692,9 @@ $params is a taxonomy_service.ChangeTaxaInputParams
 $output is a taxonomy_service.ChangeTaxaOut
 ChangeTaxaInputParams is a reference to a hash where the following keys are defined:
 	input_genome has a value which is a string
-	taxa_ref has a value which is a string
-	parent_taxa_ref has a value which is a string
+	scientific_name has a value which is a string
+	workspace has a value which is a string
+	comments has a value which is a string
 ChangeTaxaOut is a reference to a hash where the following keys are defined:
 	genome_ref has a value which is a string
 	taxa_ref has a value which is a string
@@ -733,19 +733,17 @@ sub change_taxa
     my $token=$ctx->token;
     my $provenance=$ctx->provenance;
     my $wsClient=Bio::KBase::workspace::Client->new($self->{'workspace-url'},token=>$token);
-    my $genome_taxon=$wsClient->get_objects([{ref=>$params->{genome_ref}}])->[0]{data};
+    my $genome_taxon=$wsClient->get_objects([{name =>$params->{input_genome}, workspace=>$params->{workspace}}])->[0]{data};
     if (defined $genome_taxon->{taxon_ref}){
         print "Currently your genome is assigned to the taxa $genome_taxon->{taxon_ref}\n";
     }
 
-    $params->{taxa_ref} = "1779/87821/1"; # This param has a hard coded value until the method is fully working
-    $params->{workspace} = "janakakbase:1477671682968"; # This param has a hard coded value until the method is fully working
-
+    $params->{taxa_ref} = "1779/87821/1"; # This param has a hard coded value until the method is fully working and return the actual value
     $genome_taxon->{taxon_ref} = $params->{taxa_ref};
 
-    print "You have assigned or modifed the taxa to $params->{taxa_ref} for the genome $genome_taxon->{scientific_name}\n";
+    print "You have assigned or modifed the taxa to $params->{scientific_name} for the genome $genome_taxon->{scientific_name}\n";
 
-     my $obj_info_list = undef;
+    my $obj_info_list = undef;
     eval {
         $obj_info_list = $wsClient->save_objects({
             'workspace'=> $params->{workspace},
@@ -1232,7 +1230,6 @@ hits has a value which is a reference to a list where each element is a taxonomy
 <pre>
 a reference to a hash where the following keys are defined:
 scientific_name has a value which is a string
-parent has a value which is a string
 taxonomic_id has a value which is an int
 kingdom has a value which is a string
 domain has a value which is a string
@@ -1250,7 +1247,6 @@ workspace has a value which is a string
 
 a reference to a hash where the following keys are defined:
 scientific_name has a value which is a string
-parent has a value which is a string
 taxonomic_id has a value which is an int
 kingdom has a value which is a string
 domain has a value which is a string
@@ -1452,8 +1448,9 @@ taxon_objects has a value which is a reference to a list where each element is a
 <pre>
 a reference to a hash where the following keys are defined:
 input_genome has a value which is a string
-taxa_ref has a value which is a string
-parent_taxa_ref has a value which is a string
+scientific_name has a value which is a string
+workspace has a value which is a string
+comments has a value which is a string
 
 </pre>
 
@@ -1463,8 +1460,9 @@ parent_taxa_ref has a value which is a string
 
 a reference to a hash where the following keys are defined:
 input_genome has a value which is a string
-taxa_ref has a value which is a string
-parent_taxa_ref has a value which is a string
+scientific_name has a value which is a string
+workspace has a value which is a string
+comments has a value which is a string
 
 
 =end text
