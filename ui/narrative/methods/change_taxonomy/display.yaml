@@ -1,7 +1,7 @@
 #
 # define display information
 #
-name: change or assign taxon to a genome
+name: Change or Assign New Taxon to a Genome
 tooltip: |
     This method change or assign new taxa to a given genome
 screenshots: []
