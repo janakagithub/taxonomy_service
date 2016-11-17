@@ -76,7 +76,7 @@
                   "target_property": "type"
                 },
                 {
-                  "constant_value": "output_genome",
+                  "input_parameter": "output_genome",
                   "target_property": "id"
                 },
                 {
