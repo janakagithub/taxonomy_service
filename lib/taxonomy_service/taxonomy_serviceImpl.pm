@@ -738,6 +738,9 @@ sub change_taxa
         print "Currently your genome is assigned to the taxa $genome_taxon->{taxon_ref}\n";
     }
 
+    $params->{taxa_ref} = "1779/87821/1"; # This param has a hard coded value until the method is fully working
+    $params->{workspace} = "janakakbase:1477671682968"; # This param has a hard coded value until the method is fully working
+
     $genome_taxon->{taxon_ref} = $params->{taxa_ref};
 
     print "You have assigned or modifed the taxa to $params->{taxa_ref} for the genome $genome_taxon->{scientific_name}\n";
