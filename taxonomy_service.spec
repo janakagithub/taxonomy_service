@@ -94,7 +94,7 @@ module taxonomy_service {
         string input_genome;
         string scientific_name;
         string workspace;
-        string comments;
+        string output_genome;
     }ChangeTaxaInputParams;
 
     typedef structure{

@@ -35,9 +35,9 @@
             }
         },
         {
-            "id": "comments",
-            "optional": true,
-            "advanced": true,
+            "id": "output_genome",
+            "optional": false,
+            "advanced": false,
             "allow_multiple": false,
             "default_values": [ "" ],
             "field_type": "text",
@@ -61,8 +61,8 @@
                     "target_property": "input_genome"
                 },
                 {
-                    "input_parameter": "comments",
-                    "target_property": "comments"
+                    "input_parameter": "output_genome",
+                    "target_property": "output_genome"
                 },
                 {
                     "input_parameter": "scientific_name",
@@ -73,6 +73,10 @@
                 {
                   "constant_value": "KBaseGenomes.Genome",
                   "target_property": "type"
+                },
+                {
+                  "constant_value": "output_genome",
+                  "target_property": "id"
                 },
                 {
                   "narrative_system_variable": "workspace",

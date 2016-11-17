@@ -37,10 +37,10 @@ parameters :
             Scientific Name
         short-hint : |
             Scientific Name
-    comments :
+    output_genome :
         ui-name : |
-            Comments
+            Name the Genome
         short-hint : |
-            Comments
+            Name of the Genome with modified taxon
 description : |
     <p>This method change or assign new taxa to a given genome.</p>

@@ -2,10 +2,10 @@ package taxonomy_service::taxonomy_serviceImpl;
 use strict;
 use Bio::KBase::Exceptions;
 # Use Semantic Versioning (2.0.0-rc.1)
-# http://semver.org
+# http://semver.org 
 our $VERSION = '0.0.1';
 our $GIT_URL = 'https://github.com/janakagithub/taxonomy_service.git';
-our $GIT_COMMIT_HASH = '688aa37ad0567499088635c05c324a54e6670092';
+our $GIT_COMMIT_HASH = '0e1a5936bafe6eaa6068c1397e0b62e3676c6f50';
 
 =head1 NAME
 
@@ -676,7 +676,7 @@ ChangeTaxaInputParams is a reference to a hash where the following keys are defi
 	input_genome has a value which is a string
 	scientific_name has a value which is a string
 	workspace has a value which is a string
-	comments has a value which is a string
+	output_genome has a value which is a string
 ChangeTaxaOut is a reference to a hash where the following keys are defined:
 	genome_ref has a value which is a string
 	taxa_ref has a value which is a string
@@ -694,7 +694,7 @@ ChangeTaxaInputParams is a reference to a hash where the following keys are defi
 	input_genome has a value which is a string
 	scientific_name has a value which is a string
 	workspace has a value which is a string
-	comments has a value which is a string
+	output_genome has a value which is a string
 ChangeTaxaOut is a reference to a hash where the following keys are defined:
 	genome_ref has a value which is a string
 	taxa_ref has a value which is a string
@@ -750,6 +750,7 @@ sub change_taxa
             'objects'=>[{
                 'type'=>'KBaseGenomes.Genome',
                 'data'=>$genome_taxon,
+                'name'=>$params->{output_genome},
                 'provenance'=>$provenance
             }]
         });
@@ -1000,7 +1001,7 @@ sub get_genomes_for_taxonomy
 
 
 
-=head2 status
+=head2 status 
 
   $return = $obj->status()
 
@@ -1450,7 +1451,7 @@ a reference to a hash where the following keys are defined:
 input_genome has a value which is a string
 scientific_name has a value which is a string
 workspace has a value which is a string
-comments has a value which is a string
+output_genome has a value which is a string
 
 </pre>
 
@@ -1462,7 +1463,7 @@ a reference to a hash where the following keys are defined:
 input_genome has a value which is a string
 scientific_name has a value which is a string
 workspace has a value which is a string
-comments has a value which is a string
+output_genome has a value which is a string
 
 
 =end text
