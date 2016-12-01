@@ -2,7 +2,7 @@ package taxonomy_service::taxonomy_serviceImpl;
 use strict;
 use Bio::KBase::Exceptions;
 # Use Semantic Versioning (2.0.0-rc.1)
-# http://semver.org 
+# http://semver.org
 our $VERSION = '0.0.1';
 our $GIT_URL = 'https://github.com/janakagithub/taxonomy_service.git';
 our $GIT_COMMIT_HASH = '0e1a5936bafe6eaa6068c1397e0b62e3676c6f50';
@@ -384,6 +384,9 @@ sub search_taxonomy
     my $provenance=$ctx->provenance;
     my $wsClient=Bio::KBase::workspace::Client->new($self->{'workspace-url'},token=>$token);
 
+    #my $start_time = [Time::HiRes::gettimeofday()];
+    my $start = Time::HiRes::gettimeofday();
+=head
 #########################Begin of temp code where search is based on list of taxons in a file instead of SOLR###########################
     open INFILE, "/kb/module/data/orglist.txt" or die "Couldn't open html file $!\n";
 
@@ -412,7 +415,7 @@ sub search_taxonomy
 
 	my $arLen = @searchHits;
     #print "$arLen\n";
-
+=cut
 ##############################################End of temp code for search ############################
 
 ########################################Search based on SOLR###################################################
@@ -450,6 +453,10 @@ sub search_taxonomy
 	    	num_of_hits =>  $search_response->{response}->{numFound}
 	};
 
+    #my $diff = Time::HiRes::tv_interval($start_time);
+    my $end = Time::HiRes::gettimeofday();
+    #print "\n\n$diff\n";
+    printf("%.2f\n", $end - $start);
     #print &Dumper ($output);
     return $output;
 
@@ -1001,7 +1008,7 @@ sub get_genomes_for_taxonomy
 
 
 
-=head2 status 
+=head2 status
 
   $return = $obj->status()
 
