@@ -435,7 +435,7 @@ sub search_taxonomy
 
     }
 
-    if ($params->{private} != 0){
+    if ($params->{private} == 2){
         $category = "private";
         $private_list = search_private ($params->{search}, $wsClient,$taxonomy_core, $self->{_SOLR_URL}, $method, $category, $params->{start}, $params->{limit} );
         push @$hits_list, $_ foreach @$private_list;
@@ -443,7 +443,7 @@ sub search_taxonomy
 
     }
 
-    if ($params->{local} != 0){
+    if ($params->{local} == 2){
         $category = "local";
         my $local_list = search_local ($params->{search}, $wsClient,$taxonomy_core, $self->{_SOLR_URL}, $method, $params->{workspace}, $category, $params->{start}, $params->{limit});
     }
