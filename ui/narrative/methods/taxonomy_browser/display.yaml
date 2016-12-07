@@ -1,0 +1,37 @@
+#
+# define display information
+#
+name: taxa browser
+tooltip: |
+    This method search and display taxa information
+screenshots: []
+
+icon: icon.png
+
+#
+# define a set of similar methods that might be useful to the user
+#
+suggestions:
+    apps:
+        related:
+            []
+        next:
+            []
+    methods:
+        related:
+            []
+        next:
+            [create_taxon]
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    scientific_name :
+        ui-name : |
+            Scientific Name
+        short-hint : |
+            Scientific Name
+
+description : |
+    <p>This method search for taxa information then display that info.</p>

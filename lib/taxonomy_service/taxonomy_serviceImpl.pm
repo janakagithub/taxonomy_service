@@ -29,6 +29,7 @@ use JSON;
 use LWP::UserAgent;
 use Try::Tiny;
 use XML::Simple;
+use Cache::MemoryCache;
 
 
 
@@ -176,26 +177,40 @@ sub search_parents
 
 sub search_private
 {
-    my ($search_word, $wsClient,$taxonomy_core, $solrurl, $method, $private, $start, $limit ) = @_;
+    my ($search, $wsClient,$taxonomy_core, $solrurl, $method, $private, $start, $limit ) = @_;
     my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
 	my $token=$ctx->token;
 	my $provenance=$ctx->provenance;
 	my $hits_list = [];
     my $usrws = $ctx->{user_id}.":private_taxonomy";
+    my $search_word = lc($search);
 
     my $ws_params = {
         workspaces=> [$usrws],
         type => 'KBaseGenomeAnnotations.Taxon'
         };
 
-    my $obj_info_list = $wsClient->list_objects($ws_params);
+
+    #Caching ws-list
+    my $cache = Cache::MemoryCache->new( { 'namespace' => 'temp',
+                                        'default_expires_in' => 30 } );
+
+    my $obj_info_list = $cache->get('temp');
+    if ( !defined $obj_info_list ){
+        $cache->clear();
+        $obj_info_list = $wsClient->list_objects($ws_params);
+        $cache->set( 'temp', $obj_info_list );
+    }
+
+
     my $psearch = [];
     for(my $i=0; $i< @{$obj_info_list}; $i++){
         my $info_ref = $obj_info_list->[$i];
         my $ob_ref =  $info_ref->[6]."/".$info_ref->[0]."/".$info_ref->[4];
         my $taxon=$wsClient->get_objects([{ref=>$ob_ref}])->[0]{data};
         #print "$taxon->{scientific_name}\n";
-        if ($taxon->{scientific_name} =~ /$search_word/){
+        my $sci_name = lc ($taxon->{scientific_name});
+        if ($sci_name =~ /$search_word/){
             my $private_search = {
                 scientific_name => $taxon->{scientific_name},
                 parent_taxon_ref => $taxon->{parent_taxon_ref},
@@ -212,18 +227,31 @@ sub search_private
 
 sub search_local
 {
-    my ($search_word, $wsClient,$taxonomy_core, $solrurl, $method, $ws, $local, $start, $limit ) = @_;
+    my ($search, $wsClient,$taxonomy_core, $solrurl, $method, $ws, $local, $start, $limit ) = @_;
     my $ctx = $taxonomy_service::taxonomy_serviceServer::CallContext;
     my $token=$ctx->token;
     my $provenance=$ctx->provenance;
     my $hits_list = [];
+    my $search_word = lc ($search);
 
     my $ws_params = {
         workspaces=> [$ws],
         type => 'KBaseGenomes.Genome'
         };
 
-    my $obj_info_list = $wsClient->list_objects($ws_params);
+    #Caching ws-list
+    my $cache = Cache::MemoryCache->new( { 'namespace' => 'temp',
+                                        'default_expires_in' => 30 } );
+    my $obj_info_list = $cache->get('temp');
+    if ( !defined $obj_info_list ){
+        $cache->clear();
+        $obj_info_list = $wsClient->list_objects($ws_params);
+        $cache->set( 'temp', $obj_info_list );
+    }
+
+
+
+
     my $psearch = [];
 
     #print &Dumper ($obj_info_list);
@@ -234,7 +262,8 @@ sub search_local
         if (defined $genome_taxon->{taxon_ref}){
             my $taxon=$wsClient->get_objects([{ref=>$genome_taxon->{taxon_ref}}])->[0]{data};
             #print "$taxon->{scientific_name}\n";
-            if ($taxon->{scientific_name} =~ /$search_word/){
+            my $sci_name = lc ($taxon->{scientific_name});
+            if ($sci_name =~ /$search_word/){
                 my $private_search = {
                     scientific_name => $taxon->{scientific_name},
                     parent_taxon_ref => $taxon->{parent_taxon_ref},
@@ -435,7 +464,7 @@ sub search_taxonomy
 
     }
 
-    if ($params->{private} == 2){
+    if ($params->{private} != 0){ #for debug purposes
         $category = "private";
         $private_list = search_private ($params->{search}, $wsClient,$taxonomy_core, $self->{_SOLR_URL}, $method, $category, $params->{start}, $params->{limit} );
         push @$hits_list, $_ foreach @$private_list;
@@ -443,7 +472,7 @@ sub search_taxonomy
 
     }
 
-    if ($params->{local} == 2){
+    if ($params->{local} != 0){ # for debug purposes
         $category = "local";
         my $local_list = search_local ($params->{search}, $wsClient,$taxonomy_core, $self->{_SOLR_URL}, $method, $params->{workspace}, $category, $params->{start}, $params->{limit});
     }
@@ -457,7 +486,7 @@ sub search_taxonomy
     my $end = Time::HiRes::gettimeofday();
     #print "\n\n$diff\n";
     printf("%.2f\n", $end - $start);
-    #print &Dumper ($output);
+    print &Dumper ($output);
     return $output;
 
     #END search_taxonomy
