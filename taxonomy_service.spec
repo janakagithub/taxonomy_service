@@ -85,11 +85,6 @@ module taxonomy_service {
 
     }Taxon;
 
-    typedef structure {
-        list <Taxon> taxon_objects;
-    }GetTaxonomiesOut;
-
-
     typedef structure{
         string input_genome;
         string scientific_name;
@@ -106,12 +101,60 @@ module taxonomy_service {
     funcdef change_taxa (ChangeTaxaInputParams params) returns (ChangeTaxaOut output) authentication required;
 
     typedef structure{
-        string search;
-        int limit;
-        int start;
+      string taxa_ref;
+      string parent_ref;
+    }TaxaViewerInput;
+
+    typedef structure {
+      int num_genomes;
+      string lineage;
+      string lineage_ref;
+      int lineage_pos;
+    } GenomeTaxaCount;
+
+    typedef structure{
+        string scientific_name;
+        string kingdom;
+        string ws_ref;
+        string parent_taxon_ref;
+        int deleted;
+        list <string> aliases;
+        string scientific_lineage;
+    }TaxaViewerOutput;
+
+
+    typedef structure{
+       string lineage_step;
+       int lineage_count;
+    }lineage_steps;
+
+
+    typedef structure{
+        string taxa_ref;
+        list <lineage_steps> lineage_genomes;
+    }GetTaxonomiesOut;
+
+    typedef structure{
+        string taxa_ref;
     }GetGenomesTaxonomyInputParams;
+
+
+    typedef structure{
+        string lineage_step;
+        int lineage_count;
+        list <TaxaViewerOutput> TaxaInfo;
+    }GetGenomesOut;
+
+     typedef structure{
+        int start;
+        int limit;
+        string lineage_step;
+    }GetGenomesTaxaGroupInputParams;
 
     funcdef get_taxonomies_by_id(GetTaxonomiesIdInputParams params) returns (GetTaxonomiesOut output) authentication required;
 
     funcdef get_genomes_for_taxonomy (GetGenomesTaxonomyInputParams params) returns (GetTaxonomiesOut output) authentication required;
+
+    funcdef get_genomes_for_taxa_group (GetGenomesTaxaGroupInputParams params) returns (GetGenomesOut output) authentication required;
+
 };

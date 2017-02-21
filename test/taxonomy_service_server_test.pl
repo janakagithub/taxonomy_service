@@ -31,9 +31,14 @@ sub get_ws_name {
 my $dropdown ={
     private => 0,
     public => 1,
-    search => 'Klebsiella ',
+    local => 0,
+    #search => 'Klebsiella oxytoca str. M5al substr. janaka',
+    #search => 'Bacillus subtilis subsp. subtilis str. JH642 substr. AG174',
+    #search => 'janaka',
+    search => 'Escher',
     limit => 10,
-    start => 0
+    start => 0,
+    workspace => "janakakbase:1477671682968"
 
 };
 =head
@@ -47,12 +52,35 @@ my $create_taxon_input = {
     parent => "1779/87821/1",
     genetic_code => "std_code",
     domain => "Bacteria",
-    aliases => ["Klebsiella oxytoca str. janaka", "Klebsiella oxytoca strain janaka"]
+    aliases => ["Klebsiella oxytoca str. janaka", "Klebsiella oxytoca strain janaka"],
+    workspace => "janakakbase:1475159287939"
+};
+
+my $chagne_taxa_input = {
+    input_genome => "Klebsiella_oxytoca_11492-1",
+    scientific_name => "1779/590344/1",
+    parent_taxa_ref => "1779/500276/1",
+    workspace => "janakakbase:1477671682968",
+    output_genome => "Klebsiella_oxytoca_modified_taxa"
+};
+
+my $genomes_by_taxa = {
+    taxa_ref => '1779/590344/3'
+};
+
+my $get_genomes_for_taxa_group_params = {
+    start => 10,
+    limit => 20,
+    lineage_step => 'Klebsiella'
+
 };
 
 eval {
-   #my $ret =$impl->search_taxonomy($dropdown);
-   my $ret =$impl->create_taxonomy($create_taxon_input);
+   my $ret =$impl->search_taxonomy($dropdown);
+   #my $ret =$impl->change_taxa($chagne_taxa_input);
+   #my $ret =$impl->create_taxonomy($create_taxon_input);
+   #my $ret =$impl->get_genomes_for_taxonomy($genomes_by_taxa);
+   #my $ret = $impl->get_genomes_for_taxa_group($get_genomes_for_taxa_group_params);
 };
 
 my $err = undef;

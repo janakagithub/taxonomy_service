@@ -241,7 +241,6 @@ $params is a taxonomy_service.CreateTaxonomyInputParams
 $output is a taxonomy_service.CreateTaxonomyOut
 CreateTaxonomyInputParams is a reference to a hash where the following keys are defined:
 	scientific_name has a value which is a string
-	parent has a value which is a string
 	taxonomic_id has a value which is an int
 	kingdom has a value which is a string
 	domain has a value which is a string
@@ -265,7 +264,6 @@ $params is a taxonomy_service.CreateTaxonomyInputParams
 $output is a taxonomy_service.CreateTaxonomyOut
 CreateTaxonomyInputParams is a reference to a hash where the following keys are defined:
 	scientific_name has a value which is a string
-	parent has a value which is a string
 	taxonomic_id has a value which is an int
 	kingdom has a value which is a string
 	domain has a value which is a string
@@ -353,8 +351,9 @@ $params is a taxonomy_service.ChangeTaxaInputParams
 $output is a taxonomy_service.ChangeTaxaOut
 ChangeTaxaInputParams is a reference to a hash where the following keys are defined:
 	input_genome has a value which is a string
-	taxa_ref has a value which is a string
-	parent_taxa_ref has a value which is a string
+	scientific_name has a value which is a string
+	workspace has a value which is a string
+	output_genome has a value which is a string
 ChangeTaxaOut is a reference to a hash where the following keys are defined:
 	genome_ref has a value which is a string
 	taxa_ref has a value which is a string
@@ -370,8 +369,9 @@ $params is a taxonomy_service.ChangeTaxaInputParams
 $output is a taxonomy_service.ChangeTaxaOut
 ChangeTaxaInputParams is a reference to a hash where the following keys are defined:
 	input_genome has a value which is a string
-	taxa_ref has a value which is a string
-	parent_taxa_ref has a value which is a string
+	scientific_name has a value which is a string
+	workspace has a value which is a string
+	output_genome has a value which is a string
 ChangeTaxaOut is a reference to a hash where the following keys are defined:
 	genome_ref has a value which is a string
 	taxa_ref has a value which is a string
@@ -453,21 +453,11 @@ GetTaxonomiesIdInputParams is a reference to a hash where the following keys are
 	taxonomy_object_refs has a value which is a reference to a list where each element is a taxonomy_service.ObjectReference
 ObjectReference is a string
 GetTaxonomiesOut is a reference to a hash where the following keys are defined:
-	taxon_objects has a value which is a reference to a list where each element is a taxonomy_service.Taxon
-Taxon is a reference to a hash where the following keys are defined:
-	children has a value which is a reference to a list where each element is a taxonomy_service.ObjectReference
-	decorated_children has a value which is a reference to a list where each element is a taxonomy_service.TaxonInfo
-	scientific_lineage has a value which is a reference to a list where each element is a string
-	decorated_scientific_lineage has a value which is a reference to a list where each element is a taxonomy_service.TaxonInfo
-	scientific_name has a value which is a string
-	taxonomic_id has a value which is an int
-	kingdom has a value which is a string
-	domain has a value which is a string
-	genetic_code has a value which is an int
-	aliases has a value which is a reference to a list where each element is a string
-TaxonInfo is a reference to a hash where the following keys are defined:
-	ref has a value which is a taxonomy_service.ObjectReference
-	scientific_name has a value which is a string
+	taxa_ref has a value which is a string
+	lineage_genomes has a value which is a reference to a list where each element is a taxonomy_service.lineage_steps
+lineage_steps is a reference to a hash where the following keys are defined:
+	lineage_step has a value which is a string
+	lineage_count has a value which is an int
 
 </pre>
 
@@ -481,21 +471,11 @@ GetTaxonomiesIdInputParams is a reference to a hash where the following keys are
 	taxonomy_object_refs has a value which is a reference to a list where each element is a taxonomy_service.ObjectReference
 ObjectReference is a string
 GetTaxonomiesOut is a reference to a hash where the following keys are defined:
-	taxon_objects has a value which is a reference to a list where each element is a taxonomy_service.Taxon
-Taxon is a reference to a hash where the following keys are defined:
-	children has a value which is a reference to a list where each element is a taxonomy_service.ObjectReference
-	decorated_children has a value which is a reference to a list where each element is a taxonomy_service.TaxonInfo
-	scientific_lineage has a value which is a reference to a list where each element is a string
-	decorated_scientific_lineage has a value which is a reference to a list where each element is a taxonomy_service.TaxonInfo
-	scientific_name has a value which is a string
-	taxonomic_id has a value which is an int
-	kingdom has a value which is a string
-	domain has a value which is a string
-	genetic_code has a value which is an int
-	aliases has a value which is a reference to a list where each element is a string
-TaxonInfo is a reference to a hash where the following keys are defined:
-	ref has a value which is a taxonomy_service.ObjectReference
-	scientific_name has a value which is a string
+	taxa_ref has a value which is a string
+	lineage_genomes has a value which is a reference to a list where each element is a taxonomy_service.lineage_steps
+lineage_steps is a reference to a hash where the following keys are defined:
+	lineage_step has a value which is a string
+	lineage_count has a value which is an int
 
 
 =end text
@@ -570,26 +550,13 @@ TaxonInfo is a reference to a hash where the following keys are defined:
 $params is a taxonomy_service.GetGenomesTaxonomyInputParams
 $output is a taxonomy_service.GetTaxonomiesOut
 GetGenomesTaxonomyInputParams is a reference to a hash where the following keys are defined:
-	search has a value which is a string
-	limit has a value which is an int
-	start has a value which is an int
+	taxa_ref has a value which is a string
 GetTaxonomiesOut is a reference to a hash where the following keys are defined:
-	taxon_objects has a value which is a reference to a list where each element is a taxonomy_service.Taxon
-Taxon is a reference to a hash where the following keys are defined:
-	children has a value which is a reference to a list where each element is a taxonomy_service.ObjectReference
-	decorated_children has a value which is a reference to a list where each element is a taxonomy_service.TaxonInfo
-	scientific_lineage has a value which is a reference to a list where each element is a string
-	decorated_scientific_lineage has a value which is a reference to a list where each element is a taxonomy_service.TaxonInfo
-	scientific_name has a value which is a string
-	taxonomic_id has a value which is an int
-	kingdom has a value which is a string
-	domain has a value which is a string
-	genetic_code has a value which is an int
-	aliases has a value which is a reference to a list where each element is a string
-ObjectReference is a string
-TaxonInfo is a reference to a hash where the following keys are defined:
-	ref has a value which is a taxonomy_service.ObjectReference
-	scientific_name has a value which is a string
+	taxa_ref has a value which is a string
+	lineage_genomes has a value which is a reference to a list where each element is a taxonomy_service.lineage_steps
+lineage_steps is a reference to a hash where the following keys are defined:
+	lineage_step has a value which is a string
+	lineage_count has a value which is an int
 
 </pre>
 
@@ -600,26 +567,13 @@ TaxonInfo is a reference to a hash where the following keys are defined:
 $params is a taxonomy_service.GetGenomesTaxonomyInputParams
 $output is a taxonomy_service.GetTaxonomiesOut
 GetGenomesTaxonomyInputParams is a reference to a hash where the following keys are defined:
-	search has a value which is a string
-	limit has a value which is an int
-	start has a value which is an int
+	taxa_ref has a value which is a string
 GetTaxonomiesOut is a reference to a hash where the following keys are defined:
-	taxon_objects has a value which is a reference to a list where each element is a taxonomy_service.Taxon
-Taxon is a reference to a hash where the following keys are defined:
-	children has a value which is a reference to a list where each element is a taxonomy_service.ObjectReference
-	decorated_children has a value which is a reference to a list where each element is a taxonomy_service.TaxonInfo
-	scientific_lineage has a value which is a reference to a list where each element is a string
-	decorated_scientific_lineage has a value which is a reference to a list where each element is a taxonomy_service.TaxonInfo
-	scientific_name has a value which is a string
-	taxonomic_id has a value which is an int
-	kingdom has a value which is a string
-	domain has a value which is a string
-	genetic_code has a value which is an int
-	aliases has a value which is a reference to a list where each element is a string
-ObjectReference is a string
-TaxonInfo is a reference to a hash where the following keys are defined:
-	ref has a value which is a taxonomy_service.ObjectReference
-	scientific_name has a value which is a string
+	taxa_ref has a value which is a string
+	lineage_genomes has a value which is a reference to a list where each element is a taxonomy_service.lineage_steps
+lineage_steps is a reference to a hash where the following keys are defined:
+	lineage_step has a value which is a string
+	lineage_count has a value which is an int
 
 
 =end text
@@ -678,6 +632,120 @@ TaxonInfo is a reference to a hash where the following keys are defined:
     }
 }
  
+
+
+=head2 get_genomes_for_taxa_group
+
+  $output = $obj->get_genomes_for_taxa_group($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a taxonomy_service.GetGenomesTaxaGroupInputParams
+$output is a taxonomy_service.GetGenomesOut
+GetGenomesTaxaGroupInputParams is a reference to a hash where the following keys are defined:
+	start has a value which is an int
+	limit has a value which is an int
+	lineage_step has a value which is a string
+GetGenomesOut is a reference to a hash where the following keys are defined:
+	lineage_step has a value which is a string
+	lineage_count has a value which is an int
+	TaxaInfo has a value which is a reference to a list where each element is a taxonomy_service.TaxaViewerOutput
+TaxaViewerOutput is a reference to a hash where the following keys are defined:
+	scientific_name has a value which is a string
+	kingdom has a value which is a string
+	ws_ref has a value which is a string
+	parent_taxon_ref has a value which is a string
+	deleted has a value which is an int
+	aliases has a value which is a reference to a list where each element is a string
+	scientific_lineage has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a taxonomy_service.GetGenomesTaxaGroupInputParams
+$output is a taxonomy_service.GetGenomesOut
+GetGenomesTaxaGroupInputParams is a reference to a hash where the following keys are defined:
+	start has a value which is an int
+	limit has a value which is an int
+	lineage_step has a value which is a string
+GetGenomesOut is a reference to a hash where the following keys are defined:
+	lineage_step has a value which is a string
+	lineage_count has a value which is an int
+	TaxaInfo has a value which is a reference to a list where each element is a taxonomy_service.TaxaViewerOutput
+TaxaViewerOutput is a reference to a hash where the following keys are defined:
+	scientific_name has a value which is a string
+	kingdom has a value which is a string
+	ws_ref has a value which is a string
+	parent_taxon_ref has a value which is a string
+	deleted has a value which is an int
+	aliases has a value which is a reference to a list where each element is a string
+	scientific_lineage has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub get_genomes_for_taxa_group
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function get_genomes_for_taxa_group (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to get_genomes_for_taxa_group:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'get_genomes_for_taxa_group');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "taxonomy_service.get_genomes_for_taxa_group",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'get_genomes_for_taxa_group',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method get_genomes_for_taxa_group",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'get_genomes_for_taxa_group',
+				       );
+    }
+}
+ 
   
 sub status
 {
@@ -721,16 +789,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'get_genomes_for_taxonomy',
+                method_name => 'get_genomes_for_taxa_group',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method get_genomes_for_taxonomy",
+            error => "Error invoking method get_genomes_for_taxa_group",
             status_line => $self->{client}->status_line,
-            method_name => 'get_genomes_for_taxonomy',
+            method_name => 'get_genomes_for_taxa_group',
         );
     }
 }
@@ -954,7 +1022,6 @@ hits has a value which is a reference to a list where each element is a taxonomy
 <pre>
 a reference to a hash where the following keys are defined:
 scientific_name has a value which is a string
-parent has a value which is a string
 taxonomic_id has a value which is an int
 kingdom has a value which is a string
 domain has a value which is a string
@@ -972,7 +1039,6 @@ workspace has a value which is a string
 
 a reference to a hash where the following keys are defined:
 scientific_name has a value which is a string
-parent has a value which is a string
 taxonomic_id has a value which is an int
 kingdom has a value which is a string
 domain has a value which is a string
@@ -1131,36 +1197,6 @@ aliases has a value which is a reference to a list where each element is a strin
 
 
 
-=head2 GetTaxonomiesOut
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a reference to a hash where the following keys are defined:
-taxon_objects has a value which is a reference to a list where each element is a taxonomy_service.Taxon
-
-</pre>
-
-=end html
-
-=begin text
-
-a reference to a hash where the following keys are defined:
-taxon_objects has a value which is a reference to a list where each element is a taxonomy_service.Taxon
-
-
-=end text
-
-=back
-
-
-
 =head2 ChangeTaxaInputParams
 
 =over 4
@@ -1174,8 +1210,9 @@ taxon_objects has a value which is a reference to a list where each element is a
 <pre>
 a reference to a hash where the following keys are defined:
 input_genome has a value which is a string
-taxa_ref has a value which is a string
-parent_taxa_ref has a value which is a string
+scientific_name has a value which is a string
+workspace has a value which is a string
+output_genome has a value which is a string
 
 </pre>
 
@@ -1185,8 +1222,9 @@ parent_taxa_ref has a value which is a string
 
 a reference to a hash where the following keys are defined:
 input_genome has a value which is a string
-taxa_ref has a value which is a string
-parent_taxa_ref has a value which is a string
+scientific_name has a value which is a string
+workspace has a value which is a string
+output_genome has a value which is a string
 
 
 =end text
@@ -1229,6 +1267,180 @@ genome_name has a value which is a string
 
 
 
+=head2 TaxaViewerInput
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+taxa_ref has a value which is a string
+parent_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+taxa_ref has a value which is a string
+parent_ref has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 GenomeTaxaCount
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+num_genomes has a value which is an int
+lineage has a value which is a string
+lineage_ref has a value which is a string
+lineage_pos has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+num_genomes has a value which is an int
+lineage has a value which is a string
+lineage_ref has a value which is a string
+lineage_pos has a value which is an int
+
+
+=end text
+
+=back
+
+
+
+=head2 TaxaViewerOutput
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+scientific_name has a value which is a string
+kingdom has a value which is a string
+ws_ref has a value which is a string
+parent_taxon_ref has a value which is a string
+deleted has a value which is an int
+aliases has a value which is a reference to a list where each element is a string
+scientific_lineage has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+scientific_name has a value which is a string
+kingdom has a value which is a string
+ws_ref has a value which is a string
+parent_taxon_ref has a value which is a string
+deleted has a value which is an int
+aliases has a value which is a reference to a list where each element is a string
+scientific_lineage has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 lineage_steps
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+lineage_step has a value which is a string
+lineage_count has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+lineage_step has a value which is a string
+lineage_count has a value which is an int
+
+
+=end text
+
+=back
+
+
+
+=head2 GetTaxonomiesOut
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+taxa_ref has a value which is a string
+lineage_genomes has a value which is a reference to a list where each element is a taxonomy_service.lineage_steps
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+taxa_ref has a value which is a string
+lineage_genomes has a value which is a reference to a list where each element is a taxonomy_service.lineage_steps
+
+
+=end text
+
+=back
+
+
+
 =head2 GetGenomesTaxonomyInputParams
 
 =over 4
@@ -1241,9 +1453,7 @@ genome_name has a value which is a string
 
 <pre>
 a reference to a hash where the following keys are defined:
-search has a value which is a string
-limit has a value which is an int
-start has a value which is an int
+taxa_ref has a value which is a string
 
 </pre>
 
@@ -1252,9 +1462,75 @@ start has a value which is an int
 =begin text
 
 a reference to a hash where the following keys are defined:
-search has a value which is a string
-limit has a value which is an int
+taxa_ref has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 GetGenomesOut
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+lineage_step has a value which is a string
+lineage_count has a value which is an int
+TaxaInfo has a value which is a reference to a list where each element is a taxonomy_service.TaxaViewerOutput
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+lineage_step has a value which is a string
+lineage_count has a value which is an int
+TaxaInfo has a value which is a reference to a list where each element is a taxonomy_service.TaxaViewerOutput
+
+
+=end text
+
+=back
+
+
+
+=head2 GetGenomesTaxaGroupInputParams
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
 start has a value which is an int
+limit has a value which is an int
+lineage_step has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+start has a value which is an int
+limit has a value which is an int
+lineage_step has a value which is a string
 
 
 =end text
