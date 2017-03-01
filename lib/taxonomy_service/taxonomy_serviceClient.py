@@ -54,11 +54,11 @@ class taxonomy_service(object):
         """
         :param params: instance of type "CreateTaxonomyInputParams" ->
            structure: parameter "scientific_name" of String, parameter
-           "parent" of String, parameter "taxonomic_id" of Long, parameter
-           "kingdom" of String, parameter "domain" of String, parameter
-           "rank" of String, parameter "comments" of String, parameter
-           "genetic_code" of String, parameter "aliases" of list of String,
-           parameter "workspace" of String
+           "taxonomic_id" of Long, parameter "kingdom" of String, parameter
+           "domain" of String, parameter "rank" of String, parameter
+           "comments" of String, parameter "genetic_code" of String,
+           parameter "aliases" of list of String, parameter "workspace" of
+           String
         :returns: instance of type "CreateTaxonomyOut" -> structure:
            parameter "ref" of type "ObjectReference" (workspace ref to an
            object), parameter "scientific_name" of String
@@ -67,35 +67,12 @@ class taxonomy_service(object):
             'taxonomy_service.create_taxonomy',
             [params], self._service_ver, context)
 
-    def get_taxonomies_by_id(self, params, context=None):
-        """
-        :param params: instance of type "GetTaxonomiesIdInputParams" ->
-           structure: parameter "taxonomy_object_refs" of list of type
-           "ObjectReference" (workspace ref to an object)
-        :returns: instance of type "GetTaxonomiesOut" -> structure: parameter
-           "taxon_objects" of list of type "Taxon" -> structure: parameter
-           "children" of list of type "ObjectReference" (workspace ref to an
-           object), parameter "decorated_children" of list of type
-           "TaxonInfo" -> structure: parameter "ref" of type
-           "ObjectReference" (workspace ref to an object), parameter
-           "scientific_name" of String, parameter "scientific_lineage" of
-           list of String, parameter "decorated_scientific_lineage" of list
-           of type "TaxonInfo" -> structure: parameter "ref" of type
-           "ObjectReference" (workspace ref to an object), parameter
-           "scientific_name" of String, parameter "scientific_name" of
-           String, parameter "taxonomic_id" of Long, parameter "kingdom" of
-           String, parameter "domain" of String, parameter "genetic_code" of
-           Long, parameter "aliases" of list of String
-        """
-        return self._client.call_method(
-            'taxonomy_service.get_taxonomies_by_id',
-            [params], self._service_ver, context)
-
     def change_taxa(self, params, context=None):
         """
         :param params: instance of type "ChangeTaxaInputParams" -> structure:
-           parameter "genome_ref" of String, parameter "taxa_ref" of String,
-           parameter "parent_taxa_ref" of String
+           parameter "input_genome" of String, parameter "scientific_name" of
+           String, parameter "workspace" of String, parameter "output_genome"
+           of String
         :returns: instance of type "ChangeTaxaOut" -> structure: parameter
            "genome_ref" of String, parameter "taxa_ref" of String, parameter
            "genome_name" of String
@@ -104,28 +81,49 @@ class taxonomy_service(object):
             'taxonomy_service.change_taxa',
             [params], self._service_ver, context)
 
+    def get_taxonomies_by_id(self, params, context=None):
+        """
+        :param params: instance of type "GetTaxonomiesIdInputParams" ->
+           structure: parameter "taxonomy_object_refs" of list of type
+           "ObjectReference" (workspace ref to an object)
+        :returns: instance of type "GetTaxonomiesOut" -> structure: parameter
+           "taxa_ref" of String, parameter "lineage_genomes" of list of type
+           "lineage_steps" -> structure: parameter "lineage_step" of String,
+           parameter "lineage_count" of Long
+        """
+        return self._client.call_method(
+            'taxonomy_service.get_taxonomies_by_id',
+            [params], self._service_ver, context)
+
     def get_genomes_for_taxonomy(self, params, context=None):
         """
         :param params: instance of type "GetGenomesTaxonomyInputParams" ->
-           structure: parameter "search" of String, parameter "limit" of
-           Long, parameter "start" of Long
+           structure: parameter "taxa_ref" of String
         :returns: instance of type "GetTaxonomiesOut" -> structure: parameter
-           "taxon_objects" of list of type "Taxon" -> structure: parameter
-           "children" of list of type "ObjectReference" (workspace ref to an
-           object), parameter "decorated_children" of list of type
-           "TaxonInfo" -> structure: parameter "ref" of type
-           "ObjectReference" (workspace ref to an object), parameter
-           "scientific_name" of String, parameter "scientific_lineage" of
-           list of String, parameter "decorated_scientific_lineage" of list
-           of type "TaxonInfo" -> structure: parameter "ref" of type
-           "ObjectReference" (workspace ref to an object), parameter
-           "scientific_name" of String, parameter "scientific_name" of
-           String, parameter "taxonomic_id" of Long, parameter "kingdom" of
-           String, parameter "domain" of String, parameter "genetic_code" of
-           Long, parameter "aliases" of list of String
+           "taxa_ref" of String, parameter "lineage_genomes" of list of type
+           "lineage_steps" -> structure: parameter "lineage_step" of String,
+           parameter "lineage_count" of Long
         """
         return self._client.call_method(
             'taxonomy_service.get_genomes_for_taxonomy',
+            [params], self._service_ver, context)
+
+    def get_genomes_for_taxa_group(self, params, context=None):
+        """
+        :param params: instance of type "GetGenomesTaxaGroupInputParams" ->
+           structure: parameter "start" of Long, parameter "limit" of Long,
+           parameter "lineage_step" of String
+        :returns: instance of type "GetGenomesOut" -> structure: parameter
+           "lineage_step" of String, parameter "lineage_count" of Long,
+           parameter "TaxaInfo" of list of type "TaxaViewerOutput" ->
+           structure: parameter "scientific_name" of String, parameter
+           "kingdom" of String, parameter "ws_ref" of String, parameter
+           "parent_taxon_ref" of String, parameter "deleted" of Long,
+           parameter "aliases" of list of String, parameter
+           "scientific_lineage" of String
+        """
+        return self._client.call_method(
+            'taxonomy_service.get_genomes_for_taxa_group',
             [params], self._service_ver, context)
 
     def status(self, context=None):

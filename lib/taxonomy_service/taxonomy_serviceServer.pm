@@ -30,18 +30,20 @@ our $CallContext;
 our %return_counts = (
         'search_taxonomy' => 1,
         'create_taxonomy' => 1,
-        'get_taxonomies_by_id' => 1,
         'change_taxa' => 1,
+        'get_taxonomies_by_id' => 1,
         'get_genomes_for_taxonomy' => 1,
+        'get_genomes_for_taxa_group' => 1,
         'status' => 1,
 );
 
 our %method_authentication = (
         'search_taxonomy' => 'required',
         'create_taxonomy' => 'required',
-        'get_taxonomies_by_id' => 'required',
         'change_taxa' => 'required',
+        'get_taxonomies_by_id' => 'required',
         'get_genomes_for_taxonomy' => 'required',
+        'get_genomes_for_taxa_group' => 'required',
 );
 
 sub _build_valid_methods
@@ -50,9 +52,10 @@ sub _build_valid_methods
     my $methods = {
         'search_taxonomy' => 1,
         'create_taxonomy' => 1,
-        'get_taxonomies_by_id' => 1,
         'change_taxa' => 1,
+        'get_taxonomies_by_id' => 1,
         'get_genomes_for_taxonomy' => 1,
+        'get_genomes_for_taxa_group' => 1,
         'status' => 1,
     };
     return $methods;
