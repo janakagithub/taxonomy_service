@@ -118,6 +118,8 @@ module taxonomy_service {
         string ws_ref;
         string parent_taxon_ref;
         int deleted;
+        string domain;
+        string category;
         list <string> aliases;
         string scientific_lineage;
     }TaxaViewerOutput;
@@ -138,10 +140,21 @@ module taxonomy_service {
         string taxa_ref;
     }GetGenomesTaxonomyInputParams;
 
+    typedef structure{
+        string parent_name;
+        string aliases;
+        string scientific_lineage;
+        string domain;
+        string ws_ref;
+        string scientific_name;
+        string parent_ref;
+    }view_each_lineage_info;
+
 
     typedef structure{
         string lineage_step;
         int lineage_count;
+        mapping <string, view_each_lineage_info> view_info;
         list <TaxaViewerOutput> TaxaInfo;
     }GetGenomesOut;
 
