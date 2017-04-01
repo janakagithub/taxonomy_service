@@ -77,6 +77,7 @@ my $get_genomes_for_taxa_group_params = {
 
 eval {
    my $ret =$impl->search_taxonomy($dropdown);
+   print $ret;
    #my $ret =$impl->change_taxa($chagne_taxa_input);
    #my $ret =$impl->create_taxonomy($create_taxon_input);
    #my $ret =$impl->get_genomes_for_taxonomy($genomes_by_taxa);

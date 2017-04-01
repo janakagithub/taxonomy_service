@@ -2,16 +2,16 @@ module-name:
     taxonomy_service
 
 module-description:
-    A KBase module
+    Taxonomy Service to support taxonomy search and taxonomy creation
 
 service-language:
     perl
 
 module-version:
-    0.0.1
+    0.0.2
 
 owners:
-    [janakakbase]
+    [janakakbase,scnaon]
 
 service-config:
     dynamic-service: true
